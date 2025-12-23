@@ -2,7 +2,7 @@
 #define _FILO2_REVTWOONEEXCHANGE_HPP_
 
 #include "AbstractOperator.hpp"
-
+// 实现车辆路径问题(VRP)中的反向2-1交换邻域操作：交换iPrev->i 和 jNext，并反转iPrev->i
 namespace cobra {
 
     class RevTwoOneExchange : public AbstractOperator {

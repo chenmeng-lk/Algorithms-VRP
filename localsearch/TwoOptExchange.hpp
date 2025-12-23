@@ -2,7 +2,7 @@
 #define _FILO2_TWOOPTEXCHANGE_HPP_
 
 #include "AbstractOperator.hpp"
-
+// 实现车辆路径问题(VRP)中的2-opt邻域操作：删去i->iNext和j->jNext之间的边，连接i->j和iNext->jNext，反转i->jNext之间的路径
 namespace cobra {
 
     class TwoOptExchange : public AbstractOperator {
@@ -10,7 +10,7 @@ namespace cobra {
         TwoOptExchange(const Instance &instance_, MoveGenerators &moves_, double tolerance_)
             : AbstractOperator(instance_, moves_, tolerance_) { }
 
-        static constexpr bool is_symmetric = true;
+        static constexpr bool is_symmetric = true;//对称
 
     protected:
         inline void pre_processing(__attribute__((unused)) Solution &solution) override { }
@@ -53,13 +53,13 @@ namespace cobra {
             // where changed use the do-while for very short tour (4 vertices) in which jNextNext equal i.
             auto curr = i;
             do {
-                storage.insert(curr);
+                storage.insert(curr);// 将受影响的顶点插入存储集合
                 curr = solution.get_next_vertex(iRoute, curr);
             } while (curr != jNextNext);
 
             const auto iNext = solution.get_next_vertex(iRoute, i);
 
-            solution.reverse_route_path(iRoute, iNext, j);
+            solution.reverse_route_path(iRoute, iNext, j);//反转iNext到j，并更新两端连接
         }
 
         void post_processing(__attribute__((unused)) Solution &solution) override { }

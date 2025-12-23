@@ -2,7 +2,7 @@
 #define _FILO2_THREEZEROEXCHANGE_HPP_
 
 #include "AbstractOperator.hpp"
-
+// 实现车辆路径问题(VRP)中的3-0交换邻域操作：移动iPrevPrev->iPrev->i 到j之前
 namespace cobra {
 
     class ThreeZeroExchange : public AbstractOperator {
@@ -10,7 +10,7 @@ namespace cobra {
         ThreeZeroExchange(const Instance &instance_, MoveGenerators &moves_, double tolerance_)
             : AbstractOperator(instance_, moves_, tolerance_) { }
 
-        static constexpr bool is_symmetric = false;
+        static constexpr bool is_symmetric = false;//不对称
 
     protected:
         inline void pre_processing(__attribute__((unused)) Solution &solution) override { }

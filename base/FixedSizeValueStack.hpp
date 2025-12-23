@@ -3,7 +3,7 @@
 
 #include <cassert>
 #include <functional>
-
+//固定大小值栈，bigin指向最后进入的元素,capacity指向栈底
 namespace cobra {
 
     template <class T>
@@ -31,7 +31,7 @@ namespace cobra {
             return *this;
         }
 
-        T get() {
+        T get() {//在第一次调用 push 之前，必须先调用至少一次 get 来腾出空间
             assert(begin < capacity);
             auto item = array[begin];
             begin++;
@@ -44,7 +44,7 @@ namespace cobra {
             array[begin] = item;
         }
 
-        void reset() {
+        void reset() {//初始满栈，begin指向栈顶
             for (int i = 0; i < capacity; i++) {
                 array[i] = initializer(i);
             }

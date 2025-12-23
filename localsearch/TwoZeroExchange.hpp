@@ -2,7 +2,7 @@
 #define _FILO2_TWOZEROEXCHANGE_HPP_
 
 #include "AbstractOperator.hpp"
-
+// 实现车辆路径问题(VRP)中的2-0交换邻域操作：移动i->iPrev到j之前
 namespace cobra {
 
     class TwoZeroExchange : public AbstractOperator {

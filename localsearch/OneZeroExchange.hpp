@@ -2,7 +2,7 @@
 #define _FILO2_ONEZEROEXCHANGE_HPP_
 
 #include "AbstractOperator.hpp"
-
+// 实现车辆路径问题(VRP)中的1-0交换邻域操作：移动i到j之前
 namespace cobra {
 
     class OneZeroExchange : public AbstractOperator {
@@ -11,7 +11,7 @@ namespace cobra {
         OneZeroExchange(const Instance &instance_, MoveGenerators &moves_, double tolerance_)
             : AbstractOperator(instance_, moves_, tolerance_) { }
 
-        static constexpr bool is_symmetric = false;
+        static constexpr bool is_symmetric = false;//不对称
 
     protected:
         inline void pre_processing(__attribute__((unused)) Solution &solution) override { }
@@ -40,7 +40,7 @@ namespace cobra {
 
             const auto iRoute = solution.get_route_index(i, j);
             const auto jRoute = solution.get_route_index(j, i);
-
+            //不同路线时容量约束、同一路线内i后不是j，否则就是未移动
             return (iRoute != jRoute &&
                     solution.get_route_load(jRoute) + this->instance.get_demand(i) <= this->instance.get_vehicle_capacity()) ||
                    (iRoute == jRoute && j != solution.get_next_vertex(iRoute, i));
@@ -58,13 +58,13 @@ namespace cobra {
             const auto iNext = solution.get_next_vertex(iRoute, i);
 
             const auto jPrev = solution.get_prev_vertex(jRoute, j);
-
+            // 将受影响的顶点插入存储集合
             storage.insert(iPrev);
             storage.insert(i);
             storage.insert(iNext);
             storage.insert(jPrev);
             storage.insert(j);
-
+            // 设置更新位：标记哪些移动生成器需要更新
             this->update_bits.at(iPrev, UPDATE_BITS_FIRST, true);
             this->update_bits.at(i, UPDATE_BITS_FIRST, true);
             this->update_bits.at(i, UPDATE_BITS_SECOND, true);

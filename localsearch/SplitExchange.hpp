@@ -2,7 +2,11 @@
 #define _FILO2_SPLITEXCHANGE_HPP_
 
 #include "AbstractOperator.hpp"
-
+/*Split
+depot ->   ...  ->    i 移除 iNext <- (反转)... <- depot
+                      |       |
+depot <- (反转)... <- j 移除 jNext    -> ... ->   depot
+*/
 namespace cobra {
 
     class SplitExchange : public AbstractOperator {
@@ -10,7 +14,7 @@ namespace cobra {
         SplitExchange(const Instance &instance_, MoveGenerators &moves_, double tolerance_)
             : AbstractOperator(instance_, moves_, tolerance_) { }
 
-        static constexpr bool is_symmetric = true;
+        static constexpr bool is_symmetric = true;//对称操作符，这个移动(i,j)和(j,i)是等价的
 
     protected:
         inline void pre_processing(__attribute__((unused)) Solution &solution) override { }
@@ -24,7 +28,7 @@ namespace cobra {
 
             const auto iNext = solution.get_next_vertex(iRoute, i);
             const auto jNext = solution.get_next_vertex(jRoute, j);
-
+            // -i->iNext  +  i->j  -  j->jNext  +  jNext->iNext
             return -solution.get_cost_prev_vertex(iRoute, iNext) + this->instance.get_cost(i, j) -
                    solution.get_cost_prev_vertex(jRoute, jNext) + this->instance.get_cost(jNext, iNext);
         }

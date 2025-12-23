@@ -2,7 +2,7 @@
 #define _FILO2_THREETHREEEXCHANGE_HPP_
 
 #include "AbstractOperator.hpp"
-
+// 实现车辆路径问题(VRP)中的3-3交换邻域操作：交换iPrevPrev->iPrev->i 和jPrevPrevPrev->jPrevPrev->jPrev
 namespace cobra {
 
     class ThreeThreeExchange : public AbstractOperator {

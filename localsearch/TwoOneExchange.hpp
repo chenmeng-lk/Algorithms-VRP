@@ -2,7 +2,7 @@
 #define _FILO2_TWOONEEXCHANGE_HPP_
 
 #include "AbstractOperator.hpp"
-
+// 实现车辆路径问题(VRP)中的2-1交换邻域操作：交换iPrev->i 和 jPrev
 namespace cobra {
 
     class TwoOneExchange : public AbstractOperator {
@@ -10,7 +10,7 @@ namespace cobra {
         TwoOneExchange(const Instance &instance_, MoveGenerators &moves_, double tolerance_)
             : AbstractOperator(instance_, moves_, tolerance_) { }
 
-        static constexpr bool is_symmetric = false;
+        static constexpr bool is_symmetric = false;//非对称
 
     protected:
         inline void pre_processing(__attribute__((unused)) Solution &solution) override { }

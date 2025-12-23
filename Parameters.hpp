@@ -1,3 +1,4 @@
+// 参数管理类 - 处理命令行参数和默认配置
 #ifndef _FILO2_PARAMETERS_HPP_
 #define _FILO2_PARAMETERS_HPP_
 
@@ -6,24 +7,26 @@
 #include <string>
 
 // Default parameters.
-#define DEFAULT_OUTPATH ("./")
-#define DEFAULT_SOLUTION_CACHE_HISTORY (50)
-#define DEFAULT_CW_LAMBDA (1.0)
-#define DEFAULT_NEIGHBORS_NUM (1500)
-#define DEFAULT_CW_NEIGHBORS (100)
-#define DEFAULT_ROUTEMIN_ITERATIONS (1000)
-#define DEFAULT_COREOPT_ITERATIONS (100000)
-#define DEFAULT_SPARSIFICATION_RULE1_NEIGHBORS (25)
-#define DEFAULT_SPARSIFICATION_FACTOR (0.25)
-#define DEFAULT_SPARSIFICATION_MULTIPLIER (0.50)
-#define DEFAULT_SHAKING_LB_FACTOR (0.375)
-#define DEFAULT_SHAKING_UB_FACTOR (0.85)
-#define DEFAULT_TOLERANCE (0.01)
-#define DEFAULT_SEED (0)
-#define DEFAULT_SA_INIT_FACTOR (0.1)
-#define DEFAULT_SA_FINAL_FACTOR (0.01)
+// 默认参数定义
+#define DEFAULT_OUTPATH ("./")                              // 输出路径
+#define DEFAULT_SOLUTION_CACHE_HISTORY (50)                 // 解缓存历史大小
+#define DEFAULT_CW_LAMBDA (1.0)                             // Clarke-Wright算法的lambda参数
+#define DEFAULT_NEIGHBORS_NUM (1500)                        // 预计算的邻居数量
+#define DEFAULT_CW_NEIGHBORS (100)                          // Clarke-Wright算法中考虑的邻居数
+#define DEFAULT_ROUTEMIN_ITERATIONS (1000)                  // 路径最小化的迭代次数
+#define DEFAULT_COREOPT_ITERATIONS (100000)                 // 核心优化的迭代次数
+#define DEFAULT_SPARSIFICATION_RULE1_NEIGHBORS (25)         // 粒度规则中的邻居数（k值）
+#define DEFAULT_SPARSIFICATION_FACTOR (0.25)                // 稀疏化因子（gamma基础值）
+#define DEFAULT_SPARSIFICATION_MULTIPLIER (0.50)            // 稀疏化乘数（delta值）
+#define DEFAULT_SHAKING_LB_FACTOR (0.375)                   // 扰动强度下界因子
+#define DEFAULT_SHAKING_UB_FACTOR (0.85)                    // 扰动强度上界因子
+#define DEFAULT_TOLERANCE (0.01)                            // 容差值
+#define DEFAULT_SEED (0)                                    // 随机种子
+#define DEFAULT_SA_INIT_FACTOR (0.1)                        // 模拟退火初始温度因子
+#define DEFAULT_SA_FINAL_FACTOR (0.01)                      // 模拟退火最终温度因子
 
 // Tokens.
+// 命令行参数标记
 #define TOKEN_OUTPATH ("--outpath")
 #define TOKEN_TOLERANCE ("--tolerance")
 #define TOKEN_NEIGHBORS_NUM ("--neighbors-num")
@@ -41,9 +44,11 @@
 #define TOKEN_SA_FINAL_FACTOR ("--sa-final-factor")
 
 
+// 参数类：管理所有算法参数
 class Parameters {
 
 public:
+    // 构造函数：解析命令行参数
     explicit Parameters(int argc, char* argv[]) {
 
         if (argc == 1) {
@@ -51,8 +56,10 @@ public:
             exit(EXIT_FAILURE);
         }
 
+        // 第一个参数是实例文件路径
         instance_path = std::string(argv[1]);
 
+        // 解析其余的键值对参数
         for (auto n = 2; n < argc; n += 2) {
 
             auto token = std::string(argv[n]);
@@ -67,6 +74,7 @@ public:
         }
     }
 
+    // Getter方法：获取各种参数值
     inline int get_solution_cache_size() const {
         return solution_cache_history;
     }
@@ -82,7 +90,7 @@ public:
     inline int get_coreopt_iterations() const {
         return coreopt_iterations;
     }
-    inline int get_sparsification_rule_neighbors() const {
+    inline int get_sparsification_rule_neighbors() const {//获取粒度规则中的邻居数
         return sparsification_rule_neighbors;
     }
     inline double get_gamma_base() const {
@@ -120,6 +128,7 @@ public:
         return neighbors_num;
     }
 
+    // 设置参数值
     void set(const std::string& key, const std::string& value) {
 
         if (key == TOKEN_OUTPATH) {
@@ -160,23 +169,24 @@ public:
     }
 
 private:
-    std::string instance_path;
-    std::string outpath = DEFAULT_OUTPATH;
-    double tolerance = DEFAULT_TOLERANCE;
-    int solution_cache_history = DEFAULT_SOLUTION_CACHE_HISTORY;
-    double cw_lambda = DEFAULT_CW_LAMBDA;
-    int cw_neighbors = DEFAULT_CW_NEIGHBORS;
-    int routemin_iterations = DEFAULT_ROUTEMIN_ITERATIONS;
-    int coreopt_iterations = DEFAULT_COREOPT_ITERATIONS;
-    int sparsification_rule_neighbors = DEFAULT_SPARSIFICATION_RULE1_NEIGHBORS;
-    double gamma_base = DEFAULT_SPARSIFICATION_FACTOR;
-    double delta = DEFAULT_SPARSIFICATION_MULTIPLIER;
-    double shaking_lb_factor = DEFAULT_SHAKING_LB_FACTOR;
-    double shaking_ub_factor = DEFAULT_SHAKING_UB_FACTOR;
-    int seed = DEFAULT_SEED;
-    double sa_initial_factor = DEFAULT_SA_INIT_FACTOR;
-    double sa_final_factor = DEFAULT_SA_FINAL_FACTOR;
-    int neighbors_num = DEFAULT_NEIGHBORS_NUM;
+    // 私有成员变量：存储所有参数值
+    std::string instance_path;                                      // 实例文件路径
+    std::string outpath = DEFAULT_OUTPATH;                          // 输出路径
+    double tolerance = DEFAULT_TOLERANCE;                           // 容差值
+    int solution_cache_history = DEFAULT_SOLUTION_CACHE_HISTORY;    // 解缓存大小
+    double cw_lambda = DEFAULT_CW_LAMBDA;                           // CW算法lambda参数
+    int cw_neighbors = DEFAULT_CW_NEIGHBORS;                        // CW算法邻居数
+    int routemin_iterations = DEFAULT_ROUTEMIN_ITERATIONS;          // 路径最小化迭代次数
+    int coreopt_iterations = DEFAULT_COREOPT_ITERATIONS;            // 核心优化迭代次数
+    int sparsification_rule_neighbors = DEFAULT_SPARSIFICATION_RULE1_NEIGHBORS;  // 粒度规则邻居数
+    double gamma_base = DEFAULT_SPARSIFICATION_FACTOR;              // gamma基础值
+    double delta = DEFAULT_SPARSIFICATION_MULTIPLIER;               // delta值
+    double shaking_lb_factor = DEFAULT_SHAKING_LB_FACTOR;           // 扰动下界因子
+    double shaking_ub_factor = DEFAULT_SHAKING_UB_FACTOR;           // 扰动上界因子
+    int seed = DEFAULT_SEED;                                        // 随机种子
+    double sa_initial_factor = DEFAULT_SA_INIT_FACTOR;              // SA初始温度因子
+    double sa_final_factor = DEFAULT_SA_FINAL_FACTOR;               // SA最终温度因子
+    int neighbors_num = DEFAULT_NEIGHBORS_NUM;                      // 预计算邻居数
 };
 
 

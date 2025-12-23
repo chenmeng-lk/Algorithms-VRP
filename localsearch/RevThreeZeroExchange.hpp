@@ -2,7 +2,7 @@
 #define _FILO2_REVTHREEZEROEXCHANGE_HPP_
 
 #include "AbstractOperator.hpp"
-
+// 实现车辆路径问题(VRP)中的反向3-0交换邻域操作：移动iPrevPrev->iPrev->i 到j之后，并反转
 namespace cobra {
 
     class RevThreeZeroExchange : public AbstractOperator {

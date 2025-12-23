@@ -2,7 +2,11 @@
 #define _FILO2_TAILSEXCHANGE_HPP_
 
 #include "AbstractOperator.hpp"
-
+        // [iRoute] = depot, o, o, o, i, iNext, o, o, o, depot
+        //                              \ /
+        //                               X___
+        //                              /    |
+        // [jRoute] = depot, o, o, o, jPrev, j, o, o, o, depot
 namespace cobra {
 
     class TailsExchange : public AbstractOperator {
@@ -10,7 +14,7 @@ namespace cobra {
         TailsExchange(const Instance &instance_, MoveGenerators &moves_, double tolerance_)
             : AbstractOperator(instance_, moves_, tolerance_) { }
 
-        static constexpr bool is_symmetric = false;
+        static constexpr bool is_symmetric = false;//非对称，因为涉及jprev、inext，交换ij结果不同
 
     protected:
         inline void pre_processing(__attribute__((unused)) Solution &solution) override { }
