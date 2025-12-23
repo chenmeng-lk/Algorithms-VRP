@@ -40,3 +40,6 @@ cmake-build-release
 venv
 __pycache__
 .cache
+instances/
+.VSCodeCounter/
+results/
