@@ -19,6 +19,12 @@ Params::Params(
 	: ap(ap), isDurationConstraint(isDurationConstraint), nbVehicles(nbVeh), durationLimit(durationLimit),
 	  vehicleCapacity(vehicleCapacity), timeCost(dist_mtx), verbose(verbose)
 {
+	/*
+	中文注释（Params 构造函数总体说明）:
+	- 该构造函数接收由 InstanceCVRPLIB 提供的原始向量（坐标、距离矩阵、服务时间、需求等）
+	  并初始化 Params 的各个成员：随机数生成器、客户向量 cli、距离矩阵引用、相关邻居（correlatedVertices）、
+	  车辆数量(nbVehicles) 的默认化逻辑与安全检查、以及惩罚参数的合理初始值。Params 是算法中许多模块共享的只读配置与数据容器。
+	*/
 	// This marks the starting time of the algorithm
 	startTime = clock();
 
@@ -28,20 +34,23 @@ Params::Params(
 
 	// Initialize RNG
 	ran.seed(ap.seed);
+	// 中文注释：根据 AlgorithmParameters 的 seed 初始化快速线性同余随机数生成器（minstd_rand），保证可复现性
 
 	// check if valid coordinates are provided
+	// 中文注释：判断是否为每个节点都提供了坐标信息；部分运行（如不使用 swap*）可能不需要坐标
 	areCoordinatesProvided = (demands.size() == x_coords.size()) && (demands.size() == y_coords.size());
 
 	cli = std::vector<Client>(nbClients + 1);
 	for (int i = 0; i <= nbClients; i++)
 	{
 		// If useSwapStar==false, x_coords and y_coords may be empty.
+		// 中文注释：当启用 swap* 邻域时，需要坐标信息计算极角（polarAngle）以及利用 CircleSector 做几何过滤
 		if (ap.useSwapStar == 1 && areCoordinatesProvided)
 		{
 			cli[i].coordX = x_coords[i];
 			cli[i].coordY = y_coords[i];
 			cli[i].polarAngle = CircleSector::positive_mod(
-				32768. * atan2(cli[i].coordY - cli[0].coordY, cli[i].coordX - cli[0].coordX) / PI);
+				32768. * atan2(cli[i].coordY - cli[0].coordY, cli[i].coordX - cli[0].coordX) / PI);//极角[-180°, 180°]对应[0, 65536)
 		}
 		else
 		{
@@ -51,6 +60,7 @@ Params::Params(
 		}
 
 		cli[i].serviceDuration = service_time[i];
+		// 中文注释：记录服务时长与需求，并统计总需求与单点最大需求
 		cli[i].demand = demands[i];
 		if (cli[i].demand > maxDemand) maxDemand = cli[i].demand;
 		totalDemand += cli[i].demand;
@@ -62,6 +72,7 @@ Params::Params(
 	// Default initialization if the number of vehicles has not been provided by the user
 	if (nbVehicles == INT_MAX)
 	{
+		// 中文注释：若用户未指定车队规模，使用基于总需求/容量的上界估计并留有安全余量
 		nbVehicles = (int)std::ceil(1.3*totalDemand/vehicleCapacity) + 3;  // Safety margin: 30% + 3 more vehicles than the trivial bin packing LB
 		if (verbose) 
 			std::cout << "----- FLEET SIZE WAS NOT SPECIFIED: DEFAULT INITIALIZATION TO " << nbVehicles << " VEHICLES" << std::endl;
@@ -115,6 +126,7 @@ Params::Params(
 	// A reasonable scale for the initial values of the penalties
 	penaltyDuration = 1;
 	penaltyCapacity = std::max<double>(0.1, std::min<double>(1000., maxDist / maxDemand));
+	// 中文注释：设置惩罚的初始值，penaltyCapacity 与距离/需求比例相关，保证在合理范围内（0.1..1000）以避免数值不稳定
 
 	if (verbose)
 		std::cout << "----- INSTANCE SUCCESSFULLY LOADED WITH " << nbClients << " CLIENTS AND " << nbVehicles << " VEHICLES" << std::endl;

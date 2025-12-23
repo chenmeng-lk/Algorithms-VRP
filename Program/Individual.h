@@ -42,7 +42,7 @@ public:
   EvalIndiv eval;															// Solution cost parameters
   std::vector < int > chromT ;												// Giant tour representing the individual
   std::vector < std::vector <int> > chromR ;								// For each vehicle, the associated sequence of deliveries (complete solution)
-  std::vector < int > successors ;											// For each node, the successor in the solution (can be the depot 0)
+  std::vector < int > successors ;											// For each node, the successor in the solution (can be the depot 0)，用于计算多样性距离
   std::vector < int > predecessors ;										// For each node, the predecessor in the solution (can be the depot 0)
   std::multiset < std::pair < double, Individual* > > indivsPerProximity ;	// The other individuals in the population, ordered by increasing proximity (the set container follows a natural ordering based on the first value of the pair)
   double biasedFitness;														// Biased fitness of the solution

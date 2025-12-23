@@ -2,6 +2,9 @@
 
 void Population::generatePopulation()
 {
+	// 构建初始种群。
+	// - 根据经验使用 4*mu 个随机初始解进行生成，并对每个随机个体先用 Split 解码，再用本地搜索优化，最后加入种群。
+	// - 对不可行解有一定概率（约一半）尝试使用更强的惩罚重运行 LS 以修复为可行解。
 	if (params.verbose) std::cout << "----- BUILDING INITIAL POPULATION" << std::endl;
 	for (int i = 0; i < 4*params.ap.mu && (i == 0 || params.ap.timeLimit == 0 || (double)(clock() - params.startTime) / (double)CLOCKS_PER_SEC < params.ap.timeLimit) ; i++)
 	{
@@ -19,7 +22,14 @@ void Population::generatePopulation()
 
 bool Population::addIndividual(const Individual & indiv, bool updateFeasible)
 {
-	if (updateFeasible)
+	/*
+	中文注释（addIndividual）:
+	- 将给定个体复制并插入到合适的子种群（feasible 或 infeasible）中，并维护个体间的 proximity 关系（indivsPerProximity）。
+	- 在插入后若子种群超出容量（mu + lambda），会按 biased fitness 淘汰个体至 mu。
+	- 若插入个体为新的最优可行解，会更新 bestSolutionRestart 与 bestSolutionOverall，并记录搜索进度。
+	- 参数 updateFeasible 控制是否将该个体的可行性结果加入到滑动窗口（listFeasibilityLoad/Duration）用于后续惩罚管理。
+	*/
+	if (updateFeasible)//更新可行性列表窗口用于后续惩罚管理
 	{
 		listFeasibilityLoad.push_back(indiv.eval.capacityExcess < MY_EPSILON);
 		listFeasibilityDuration.push_back(indiv.eval.durationExcess < MY_EPSILON);
@@ -66,6 +76,9 @@ bool Population::addIndividual(const Individual & indiv, bool updateFeasible)
 
 void Population::updateBiasedFitnesses(SubPopulation & pop)
 {
+	// 中文注释：基于个体的多样性贡献与排序更新 biased fitness，用于后续的幸存者选择。
+	// - 通过计算每个个体与其 nbClose 个最近邻的平均 broken-pairs 距离评估多样性（距离越大表示越独特）。
+	// - biasedFitness 将质量排序（fitRank）和多样性排序（divRank）结合，精英（nbElite）保证低惩罚。
 	// Ranking the individuals based on their diversity contribution (decreasing order of distance)
 	std::vector <std::pair <double, int> > ranking;
 	for (int i = 0 ; i < (int)pop.size(); i++) 
@@ -91,6 +104,8 @@ void Population::updateBiasedFitnesses(SubPopulation & pop)
 
 void Population::removeWorstBiasedFitness(SubPopulation & pop)
 {
+	// 中文注释：按 biasedFitness 选择并移除最不合适的个体（优先淘汰克隆，再按 biasedFitness 取最大者移除）。
+	// - 在移除后还需清理其在其他个体 proximity 集合中的记录，并释放内存。
 	updateBiasedFitnesses(pop);
 	if (pop.size() <= 1) throw std::string("Eliminating the best individual: this should not occur in HGS");
 
@@ -127,6 +142,7 @@ void Population::removeWorstBiasedFitness(SubPopulation & pop)
 
 void Population::restart()
 {
+	// 中文注释：重启（reset）操作：释放当前子种群内存，重置 bestSolutionRestart，并重建初始种群。
 	if (params.verbose) std::cout << "----- RESET: CREATING A NEW POPULATION -----" << std::endl;
 	for (Individual * indiv : feasibleSubpop) delete indiv ;
 	for (Individual * indiv : infeasibleSubpop) delete indiv;
@@ -138,6 +154,9 @@ void Population::restart()
 
 void Population::managePenalties()
 {
+	// 中文注释：惩罚函数自适应管理
+	// - 使用滑动窗口统计当前种群（最近若干次插入）的负载/时长可行比例，并根据 targetFeasible 增减 penaltyCapacity/penaltyDuration
+	// - 同时对 infeasible 子种群的 penalizedCost 进行更新，并在必要时重新排序
 	// Setting some bounds [0.1,100000] to the penalty values for safety
 	double fractionFeasibleLoad = (double)std::count(listFeasibilityLoad.begin(), listFeasibilityLoad.end(), true) / (double)listFeasibilityLoad.size();
 	if (fractionFeasibleLoad < params.ap.targetFeasible - 0.05 && params.penaltyCapacity < 100000.)
@@ -159,6 +178,7 @@ void Population::managePenalties()
 		+ params.penaltyDuration * infeasibleSubpop[i]->eval.durationExcess;
 
 	// If needed, reorder the individuals in the infeasible subpopulation since the penalty values have changed (simple bubble sort for the sake of simplicity)
+	//根据总惩罚成本冒泡排序不可行子种群个体
 	for (int i = 0; i < (int)infeasibleSubpop.size(); i++)
 	{
 		for (int j = 0; j < (int)infeasibleSubpop.size() - i - 1; j++)
@@ -175,6 +195,7 @@ void Population::managePenalties()
 
 const Individual & Population::getBinaryTournament ()
 {
+	// 中文注释：二元锦标赛选择，从两个子种群的并集中均匀抽取两个个体，比较 biasedFitness 保留更好的一个并返回其引用
 	// Picking two individuals with uniform distribution over the union of the feasible and infeasible subpopulations
 	std::uniform_int_distribution<> distr(0, feasibleSubpop.size() + infeasibleSubpop.size() - 1);
 	int place1 = distr(params.ran);
@@ -226,7 +247,7 @@ void Population::printState(int nbIter, int nbIterNoImprovement)
 	}
 }
 
-double Population::brokenPairsDistance(const Individual & indiv1, const Individual & indiv2)
+double Population::brokenPairsDistance(const Individual & indiv1, const Individual & indiv2)//破坏对距离
 {
 	int differences = 0;
 	for (int j = 1; j <= params.nbClients; j++)
@@ -237,14 +258,14 @@ double Population::brokenPairsDistance(const Individual & indiv1, const Individu
 	return (double)differences / (double)params.nbClients;
 }
 
-double Population::averageBrokenPairsDistanceClosest(const Individual & indiv, int nbClosest)
+double Population::averageBrokenPairsDistanceClosest(const Individual & indiv, int nbClosest)//个体indiv与子种群最近的nbClosest个邻居的平均破坏对距离
 {
 	double result = 0.;
 	int maxSize = std::min<int>(nbClosest, indiv.indivsPerProximity.size());
 	auto it = indiv.indivsPerProximity.begin();
 	for (int i = 0; i < maxSize; i++)
 	{
-		result += it->first;
+		result += it->first;//maxSize个邻居破坏对距离和
 		++it;
 	}
 	return result / (double)maxSize;

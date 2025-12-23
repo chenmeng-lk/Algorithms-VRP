@@ -30,9 +30,9 @@ struct ClientSplit
 {
 	double demand;
 	double serviceTime;
-	double d0_x;
-	double dx_0;
-	double dnext;
+	double d0_x;// 从车场(0)到客户x的距离
+	double dx_0;//从客户x到车场(0)的距离
+	double dnext;//从客户x到下一个客户(x+1)的距离
 	ClientSplit() : demand(0.), serviceTime(0.), d0_x(0.), dx_0(0.), dnext(0.) {};
 };
 
@@ -71,16 +71,17 @@ class Split
 
  /* Auxiliary data structures to run the Linear Split algorithm */
  std::vector < ClientSplit > cliSplit;
- std::vector < std::vector < double > > potential;  // Potential vector
- std::vector < std::vector < int > > pred;  // Indice of the predecessor in an optimal path
- std::vector <double> sumDistance; // sumDistance[i] for i > 1 contains the sum of distances : sum_{k=1}^{i-1} d_{k,k+1}
- std::vector <double> sumLoad; // sumLoad[i] for i >= 1 contains the sum of loads : sum_{k=1}^{i} q_k
- std::vector <double> sumService; // sumService[i] for i >= 1 contains the sum of service time : sum_{k=1}^{i} s_k
+ std::vector < std::vector < double > > potential;  // Potential vector potential[k][i] = 使用k辆车服务前i个客户的最小惩罚成本
+ std::vector < std::vector < int > > pred;  // Indice of the predecessor in an optimal path 达到potential[k][i]时，前一辆车服务的最后一个客户索引
+ std::vector <double> sumDistance; // sumDistance[i] for i > 1 contains the sum of distances : sum_{k=1}^{i-1} d_{k,k+1} 前i个客户之间的连续距离和
+ std::vector <double> sumLoad; // sumLoad[i] for i >= 1 contains the sum of loads : sum_{k=1}^{i} q_k 前i个客户的总需求
+ std::vector <double> sumService; // sumService[i] for i >= 1 contains the sum of service time : sum_{k=1}^{i} s_k 前i个客户的总服务时间
 
  // To be called with i < j only
  // Computes the cost of propagating the label i until j
+ //已使用k辆车服务前i个客户，再计算到第j个客户的成本
  inline double propagate(int i, int j, int k)
- {
+ {//i已经被上一辆车服务了，故从i+1开始
 	 return potential[k][i] + sumDistance[j] - sumDistance[i + 1] + cliSplit[i + 1].d0_x + cliSplit[j].dx_0
 		 + params.penaltyCapacity * std::max<double>(sumLoad[j] - sumLoad[i] - params.vehicleCapacity, 0.);
  }
@@ -88,13 +89,13 @@ class Split
  // Tests if i dominates j as a predecessor for all nodes x >= j+1
  // We assume that i < j
  inline bool dominates(int i, int j, int k)
- {
+ {//对于所有x >= j+1，从i转移都比从j转移更优
 	 return potential[k][j] + cliSplit[j + 1].d0_x > potential[k][i] + cliSplit[i + 1].d0_x + sumDistance[j + 1] - sumDistance[i + 1]
 		 + params.penaltyCapacity * (sumLoad[j] - sumLoad[i]);
- }
+ }//从j开始创建新路线到x的成本 > 从i开始创建新路线到x的成本
 
  // Tests if j dominates i as a predecessor for all nodes x >= j+1
- // We assume that i < j
+ // We assume that i < j 检查节点j是否从右侧支配节点i
  inline bool dominatesRight(int i, int j, int k)
  {
 	 return potential[k][j] + cliSplit[j + 1].d0_x < potential[k][i] + cliSplit[i + 1].d0_x + sumDistance[j + 1] - sumDistance[i + 1] + MY_EPSILON;

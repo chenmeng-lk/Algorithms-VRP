@@ -31,6 +31,7 @@ struct AlgorithmParameters default_algorithm_parameters() {
 
 void print_algorithm_parameters(const AlgorithmParameters & ap)
 {
+	// 中文注释：打印当前算法参数的值，便于运行时确认配置
 	std::cout << "=========== Algorithm Parameters =================" << std::endl;
 	std::cout << "---- nbGranular              is set to " << ap.nbGranular << std::endl;
 	std::cout << "---- mu                      is set to " << ap.mu << std::endl;

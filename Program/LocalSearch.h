@@ -27,7 +27,7 @@ SOFTWARE.*/
 
 struct Node ;
 
-// Structure containing a route
+// Structure containing a route表示单条车辆路线
 struct Route
 {
 	int cour;							// Route index
@@ -39,11 +39,11 @@ struct Route
 	double load;						// Total load on the route
 	double reversalDistance;			// Difference of cost if the route is reversed
 	double penalty;						// Current sum of load and duration penalties
-	double polarAngleBarycenter;		// Polar angle of the barycenter of the route
-	CircleSector sector;				// Circle sector associated to the set of customers
+	double polarAngleBarycenter;		// Polar angle of the barycenter of the route 路线质心的极角（用于空间分区）
+	CircleSector sector;				// Circle sector associated to the set of customers 路线客户集的扇形区域
 };
 
-struct Node
+struct Node//路线上的节点
 {
 	bool isDepot;						// Tells whether this node represents a depot or not
 	int cour;							// Node index
@@ -97,6 +97,7 @@ struct ThreeBestInsert
 };
 
 // Structured used to keep track of the best SWAP* move
+//记录最佳SWAP*移动的信息
 struct SwapStarElement
 {
 	double moveCost = 1.e30 ;
@@ -140,14 +141,14 @@ private:
 	int nodeVPrevIndex, nodeVIndex, nodeYIndex, nodeYNextIndex ;	
 	double loadU, loadX, loadV, loadY;
 	double serviceU, serviceX, serviceV, serviceY;
-	double penaltyCapacityLS, penaltyDurationLS ;
-	bool intraRouteMove ;
+	double penaltyCapacityLS, penaltyDurationLS ;// 局部搜索使用的惩罚系数
+	bool intraRouteMove ;// 是否为路线内移动的标志
 
 	void setLocalVariablesRouteU(); // Initializes some local variables and distances associated to routeU to avoid always querying the same values in the distance matrix
 	void setLocalVariablesRouteV(); // Initializes some local variables and distances associated to routeV to avoid always querying the same values in the distance matrix
 
 	inline double penaltyExcessDuration(double myDuration) {return std::max<double>(0., myDuration - params.durationLimit)*penaltyDurationLS;}
-	inline double penaltyExcessLoad(double myLoad) {return std::max<double>(0., myLoad - params.vehicleCapacity)*penaltyCapacityLS;}
+	inline double penaltyExcessLoad(double myLoad) {return std::max<double>(0., myLoad - params.vehicleCapacity)*penaltyCapacityLS;}//输入是总负载，输出负载成本惩罚
 
 	/* RELOCATE MOVES */
 	// (Legacy notations: move1...move9 from Prins 2004)
