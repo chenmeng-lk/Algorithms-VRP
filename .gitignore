@@ -17,7 +17,7 @@ cmake-build-*
 [Xx]86/
 *.user
 .vs/
-
+Instances/
 
 # Prerequisites
 *.d
