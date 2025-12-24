@@ -23,7 +23,7 @@ void Population::generatePopulation()
 bool Population::addIndividual(const Individual & indiv, bool updateFeasible)
 {
 	/*
-	中文注释（addIndividual）:
+	（addIndividual）:
 	- 将给定个体复制并插入到合适的子种群（feasible 或 infeasible）中，并维护个体间的 proximity 关系（indivsPerProximity）。
 	- 在插入后若子种群超出容量（mu + lambda），会按 biased fitness 淘汰个体至 mu。
 	- 若插入个体为新的最优可行解，会更新 bestSolutionRestart 与 bestSolutionOverall，并记录搜索进度。
@@ -42,7 +42,7 @@ bool Population::addIndividual(const Individual & indiv, bool updateFeasible)
 
 	// Create a copy of the individual and updade the proximity structures calculating inter-individual distances
 	Individual * myIndividual = new Individual(indiv);
-	for (Individual * myIndividual2 : subpop)
+	for (Individual * myIndividual2 : subpop)//更新新插入个体与其他个体的距离
 	{
 		double myDistance = brokenPairsDistance(*myIndividual,*myIndividual2);
 		myIndividual2->indivsPerProximity.insert({ myDistance, myIndividual });
@@ -50,6 +50,7 @@ bool Population::addIndividual(const Individual & indiv, bool updateFeasible)
 	}
 
 	// Identify the correct location in the subpopulation and insert the individual
+	//按照惩罚成本升序的顺序排序种群个体
 	int place = (int)subpop.size();
 	while (place > 0 && subpop[place - 1]->eval.penalizedCost > indiv.eval.penalizedCost - MY_EPSILON) place--;
 	subpop.emplace(subpop.begin() + place, myIndividual);
@@ -76,13 +77,13 @@ bool Population::addIndividual(const Individual & indiv, bool updateFeasible)
 
 void Population::updateBiasedFitnesses(SubPopulation & pop)
 {
-	// 中文注释：基于个体的多样性贡献与排序更新 biased fitness，用于后续的幸存者选择。
+	// 基于个体的多样性贡献与排序更新 biased fitness，用于后续的幸存者选择。
 	// - 通过计算每个个体与其 nbClose 个最近邻的平均 broken-pairs 距离评估多样性（距离越大表示越独特）。
 	// - biasedFitness 将质量排序（fitRank）和多样性排序（divRank）结合，精英（nbElite）保证低惩罚。
 	// Ranking the individuals based on their diversity contribution (decreasing order of distance)
 	std::vector <std::pair <double, int> > ranking;
 	for (int i = 0 ; i < (int)pop.size(); i++) 
-		ranking.push_back({-averageBrokenPairsDistanceClosest(*pop[i],params.ap.nbClose),i});
+		ranking.push_back({-averageBrokenPairsDistanceClosest(*pop[i],params.ap.nbClose),i});//ranking根据多样性从大到小排序
 	std::sort(ranking.begin(), ranking.end());
 
 	// Updating the biased fitness values
@@ -95,7 +96,7 @@ void Population::updateBiasedFitnesses(SubPopulation & pop)
 			double divRank = (double)i / (double)(pop.size() - 1); // Ranking from 0 to 1
 			double fitRank = (double)ranking[i].second / (double)(pop.size() - 1);
 			if ((int)pop.size() <= params.ap.nbElite) // Elite individuals cannot be smaller than population size
-				pop[ranking[i].second]->biasedFitness = fitRank;
+				pop[ranking[i].second]->biasedFitness = fitRank;//种群大小比精英个体数小，不需要考虑多样性贡献
 			else 
 				pop[ranking[i].second]->biasedFitness = fitRank + (1.0 - (double)params.ap.nbElite / (double)pop.size()) * divRank;
 		}
@@ -104,7 +105,7 @@ void Population::updateBiasedFitnesses(SubPopulation & pop)
 
 void Population::removeWorstBiasedFitness(SubPopulation & pop)
 {
-	// 中文注释：按 biasedFitness 选择并移除最不合适的个体（优先淘汰克隆，再按 biasedFitness 取最大者移除）。
+	// 按 biasedFitness 选择并移除最不合适的个体（优先淘汰克隆，再按 biasedFitness 取最大者移除）。
 	// - 在移除后还需清理其在其他个体 proximity 集合中的记录，并释放内存。
 	updateBiasedFitnesses(pop);
 	if (pop.size() <= 1) throw std::string("Eliminating the best individual: this should not occur in HGS");
@@ -142,7 +143,7 @@ void Population::removeWorstBiasedFitness(SubPopulation & pop)
 
 void Population::restart()
 {
-	// 中文注释：重启（reset）操作：释放当前子种群内存，重置 bestSolutionRestart，并重建初始种群。
+	// 重启（reset）操作：释放当前子种群内存，重置 bestSolutionRestart，并重建初始种群。
 	if (params.verbose) std::cout << "----- RESET: CREATING A NEW POPULATION -----" << std::endl;
 	for (Individual * indiv : feasibleSubpop) delete indiv ;
 	for (Individual * indiv : infeasibleSubpop) delete indiv;
@@ -154,7 +155,7 @@ void Population::restart()
 
 void Population::managePenalties()
 {
-	// 中文注释：惩罚函数自适应管理
+	// 惩罚函数自适应管理
 	// - 使用滑动窗口统计当前种群（最近若干次插入）的负载/时长可行比例，并根据 targetFeasible 增减 penaltyCapacity/penaltyDuration
 	// - 同时对 infeasible 子种群的 penalizedCost 进行更新，并在必要时重新排序
 	// Setting some bounds [0.1,100000] to the penalty values for safety
@@ -195,7 +196,7 @@ void Population::managePenalties()
 
 const Individual & Population::getBinaryTournament ()
 {
-	// 中文注释：二元锦标赛选择，从两个子种群的并集中均匀抽取两个个体，比较 biasedFitness 保留更好的一个并返回其引用
+	// 二元锦标赛选择，从两个子种群的并集中均匀抽取两个个体，比较 biasedFitness 保留更好的一个并返回其引用
 	// Picking two individuals with uniform distribution over the union of the feasible and infeasible subpopulations
 	std::uniform_int_distribution<> distr(0, feasibleSubpop.size() + infeasibleSubpop.size() - 1);
 	int place1 = distr(params.ran);

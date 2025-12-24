@@ -3,7 +3,7 @@
 void Genetic::run()
 {	
 	/*
-	中文注释（Genetic::run 总体流程）:
+	（Genetic::run 总体流程）:
 	- 该函数是主遗传算法循环的实现：
 		1. 生成初始种群（population.generatePopulation）。
 		2. 在每次迭代中进行选择和交叉（crossoverOX），得到子代 offspring。
@@ -53,7 +53,7 @@ void Genetic::run()
 void Genetic::crossoverOX(Individual & result, const Individual & parent1, const Individual & parent2)
 {
 		/*
-		中文注释（OX 交叉说明 crossoverOX）:
+		（OX 交叉说明 crossoverOX）:
 		- 使用经典的 Order Crossover (OX) 变体对 parent1 和 parent2 进行顺序交叉，生成 result 的 giant-tour 表示（chromT）。
 		- 具体步骤：
 			1. 随机选择一个交叉区间 [start,end]（确保 start != end）。

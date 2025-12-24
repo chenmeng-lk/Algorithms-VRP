@@ -12,7 +12,7 @@ struct SolutionRoute
 	int * path;
 };
 
-// 中文注释（SolutionRoute）:
+// （SolutionRoute）:
 // - 表示一条路线的结果结构：
 //   * length: 该路线上客户数量
 //   * path: 指向包含客户编号的整数数组（由调用方/返回方负责内存管理，C_Interface.cpp 中使用 new 分配，delete_solution 负责释放）
@@ -26,7 +26,7 @@ struct Solution
 	struct SolutionRoute * routes;
 };
 
-// 中文注释（Solution）:
+// （Solution）:
 // - 汇总解的信息结构：
 //   * cost: 最终的惩罚化代价（包含距离与基于 penalty 的超量成本），双精度
 //   * time: 从启动到求解完成所消耗的时间（秒）
@@ -42,7 +42,7 @@ struct Solution * solve_cvrp(
 	double vehicleCapacity, double durationLimit, char isRoundingInteger, char isDurationConstraint,
 	int max_nbVeh, const struct AlgorithmParameters* ap, char verbose);
 
-// 中文注释（solve_cvrp）:
+// （solve_cvrp）:
 // - C 接口函数：基于二维坐标与服务时长等输入求解 CVRP。
 // - 参数说明（主要）：
 //   * n: 节点数（包括 depot）。
@@ -65,7 +65,7 @@ struct Solution *solve_cvrp_dist_mtx(
 	double vehicleCapacity, double durationLimit, char isDurationConstraint,
 	int max_nbVeh, const struct AlgorithmParameters *ap, char verbose);
 
-// 中文注释（solve_cvrp_dist_mtx）:
+// （solve_cvrp_dist_mtx）:
 // - C 接口函数：当调用方直接提供距离矩阵（dist_mtx，按行主序排列 n*n 元素）时使用。
 // - 与 solve_cvrp 的区别：避免在接口中重复计算欧几里得距离，而是直接使用提供的距离矩阵。
 // - 返回值与内存管理规则同上。
@@ -75,7 +75,7 @@ extern "C"
 #endif
 void delete_solution(struct Solution * sol);
 
-// 中文注释（delete_solution）:
+// （delete_solution）:
 // - 释放由 solve_cvrp 或 solve_cvrp_dist_mtx 返回的 Solution 结构及其内部动态分配的数组。
 // - 使用后务必调用以避免内存泄漏。
 

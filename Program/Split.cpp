@@ -3,7 +3,7 @@
 void Split::generalSplit(Individual & indiv, int nbMaxVehicles)
 {
 	/*
-	中文注释（Split::generalSplit 总体说明）:
+	（Split::generalSplit 总体说明）:
 	- Split 模块负责将 giant-tour（indiv.chromT）解码为具体的车辆路线集合 indiv.chromR。
 	- generalSplit 会先用一些预处理把每个位置的需求、服务时间、到下一个节点的距离等信息填入 cliSplit 与前缀和数组，
 	  然后尝试两种 Split 算法：首先是简单的 Bellman 风格实现（splitSimple），若不成功则使用受限车队的 Split（splitLF）。
@@ -32,7 +32,7 @@ void Split::generalSplit(Individual & indiv, int nbMaxVehicles)
 
 	// We first try the simple split, and then the Split with limited fleet if this is not successful
 	// We first try the simple split, and then the Split with limited fleet if this is not successful
-	// 中文注释：优先尝试更快的 splitSimple（通常近似 O(n)），若因车辆上界或其他约束不满足再回退到更一般的 splitLF
+	// 优先尝试更快的 splitSimple（通常近似 O(n)），若因车辆上界或其他约束不满足再回退到更一般的 splitLF
 	if (splitSimple(indiv) == 0)
 		splitLF(indiv);
 
@@ -43,7 +43,7 @@ void Split::generalSplit(Individual & indiv, int nbMaxVehicles)
 int Split::splitSimple(Individual & indiv)//无限制车队分割
 {	//cliSplit[i]已经对应了chromT[i-1]
 	/*
-	中文注释（splitSimple）:
+	（splitSimple）:
 	- 使用 Bellman 最短路径思想按拓扑顺序构建最优分割，适用于无限车队（或不显式限制车辆数）的情形。
 	- 若存在时长约束，复杂度为 O(n^2)（双重循环），否则采用 O(n) 的双端队列技巧以加速。
 	- 算法计算从位置 i+1 到 j 的成本（包括回到仓库的成本与对超载/超时的惩罚），并用最小化累计成本更新 potential 表与 pred 表来回溯解。

@@ -8,7 +8,7 @@ using namespace std;
 int main(int argc, char *argv[])
 {
 		/*
-		中文注释（程序入口总体说明）:
+		（程序入口总体说明）:
 		- 该文件包含程序主入口，执行以下主要步骤：
 			1. 使用 `CommandLine` 解析命令行参数和算法参数（包括 seed、车辆数、输出路径等）。
 			2. 根据命令行和实例文件构造 `InstanceCVRPLIB`，读取 VRP 实例（坐标、需求、服务时间、容量、时间窗/时长限制等）。
@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 		if (commandline.verbose) print_algorithm_parameters(commandline.ap);
 
 		// Reading the data file and initializing some data structures
-		// 中文注释：根据命令行提供的实例路径构造 InstanceCVRPLIB，
+		// 根据命令行提供的实例路径构造 InstanceCVRPLIB，
 		// 该构造函数负责解析 .vrp 文件并填充坐标、需求、服务时间、距离矩阵等信息。
 		if (commandline.verbose) std::cout << "----- READING INSTANCE: " << commandline.pathInstance << std::endl;
 		InstanceCVRPLIB cvrp(commandline.pathInstance, commandline.isRoundingInteger);

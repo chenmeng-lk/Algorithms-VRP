@@ -34,15 +34,15 @@ public:
 	AlgorithmParameters ap = default_algorithm_parameters();
 
 	int nbVeh		 = INT_MAX;		// Number of vehicles. Default value: infinity
-	// 中文注释：车辆数。默认值为 INT_MAX，表示未指定车队规模（可视作“无穷大/未定”），后续 Params 构造会处理该情况并给出默认上界。
+	// 车辆数。默认值为 INT_MAX，表示未指定车队规模（可视作“无穷大/未定”），后续 Params 构造会处理该情况并给出默认上界。
 	std::string pathInstance;		// Instance path
-	// 中文注释：输入实例文件路径（.vrp 文件）
+	// 输入实例文件路径（.vrp 文件）
 	std::string pathSolution;		// Solution path
-	// 中文注释：输出解文件路径
+	// 输出解文件路径
 	bool verbose     = true;
-	// 中文注释：是否输出详细日志（命令行 -log 控制）
+	// 是否输出详细日志（命令行 -log 控制）
 	bool isRoundingInteger = true;
-	// 中文注释：是否将距离四舍五入为整数（命令行 -round 控制）
+	// 是否将距离四舍五入为整数（命令行 -round 控制）
 
 	// Reads the line of command and extracts possible options
 	CommandLine(int argc, char* argv[])
@@ -60,20 +60,20 @@ public:
 			{
 				if (std::string(argv[i]) == "-t")
 					ap.timeLimit = atof(argv[i+1]);
-					// 中文注释：设置时间上限（秒），覆盖默认
+					// 设置时间上限（秒），覆盖默认
 				else if (std::string(argv[i]) == "-it")
 					ap.nbIter  = atoi(argv[i+1]);
 				else if (std::string(argv[i]) == "-seed")
 					ap.seed    = atoi(argv[i+1]);
 				else if (std::string(argv[i]) == "-veh")
 					nbVeh = atoi(argv[i+1]);
-					// 中文注释：强制指定车辆数，上层 Params 将使用该值而不是自动估算
+					// 强制指定车辆数，上层 Params 将使用该值而不是自动估算
 				else if (std::string(argv[i]) == "-round")
 					isRoundingInteger = atoi(argv[i+1]);
-					// 中文注释：控制距离是否四舍五入为整数（0/1）
+					// 控制距离是否四舍五入为整数（0/1）
 				else if (std::string(argv[i]) == "-log")
 					verbose = atoi(argv[i+1]);
-					// 中文注释：设置日志输出开关（0/1）
+					// 设置日志输出开关（0/1）
 				else if (std::string(argv[i]) == "-nbGranular")
 					ap.nbGranular = atoi(argv[i+1]);
 				else if (std::string(argv[i]) == "-mu")
@@ -97,7 +97,7 @@ public:
 				else
 				{
 					std::cout << "----- ARGUMENT NOT RECOGNIZED: " << std::string(argv[i]) << std::endl;
-					// 中文注释：未识别参数时打印帮助并抛出异常
+					// 未识别参数时打印帮助并抛出异常
 					display_help(); throw std::string("Incorrect line of command");
 				}
 			}
@@ -107,11 +107,11 @@ public:
 	// Printing information about how to use the code
 	void display_help()
 	{
-		// 中文注释：打印程序使用帮助与参数说明（英文原文保持不变，下面也可阅读中文注释）
+		// 打印程序使用帮助与参数说明（英文原文保持不变，下面也可阅读）
 		std::cout << std::endl;
 		std::cout << "-------------------------------------------------- HGS-CVRP algorithm (2020) ---------------------------------------------------" << std::endl;
 		std::cout << "Call with: ./hgs instancePath solPath [-it nbIter] [-t myCPUtime] [-seed mySeed] [-veh nbVehicles] [-log verbose]               " << std::endl;
-		// 中文注释：调用格式示例
+		// 调用格式示例
 		std::cout << "[-it <int>] sets a maximum number of iterations without improvement. Defaults to 20,000                                         " << std::endl;
 		std::cout << "    中文：设置最多允许的无改进迭代次数，默认 20000" << std::endl;
 		std::cout << "[-t <double>] sets a time limit in seconds. If this parameter is set the code will be run iteratively until the time limit      " << std::endl;

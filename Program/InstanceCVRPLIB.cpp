@@ -9,7 +9,7 @@
 InstanceCVRPLIB::InstanceCVRPLIB(std::string pathToInstance, bool isRoundingInteger = true)
 {
 	/*
-	中文注释（InstanceCVRPLIB 构造函数）:
+	（InstanceCVRPLIB 构造函数）:
 	- 解析 CVRPLIB 风格的 .vrp 文件，提取：节点数量、坐标、需求、车辆容量、服务时间、（可选）时长限制等字段。
 	- 关键假设与约束：
 	  * .vrp 文件的节点编号从 1 开始，且仓库（depot）为文件中的第一个节点（node_number == 1）。
@@ -35,7 +35,7 @@ InstanceCVRPLIB::InstanceCVRPLIB(std::string pathToInstance, bool isRoundingInte
 			else if (content == "CAPACITY")	inputFile >> content2 >> vehicleCapacity;
 			else if (content == "DISTANCE") { inputFile >> content2 >> durationLimit; isDurationConstraint = true; }
 			else if (content == "SERVICE_TIME")	inputFile >> content2 >> serviceTimeData;
-				// 中文注释：SERVICE_TIME 字段用于统一设置每个客户（除 depot）默认的服务时长
+				// SERVICE_TIME 字段用于统一设置每个客户（除 depot）默认的服务时长
 			else throw std::string("Unexpected data in input file: " + content);
 		}
 		if (nbClients <= 0) throw std::string("Number of nodes is undefined");
@@ -80,7 +80,7 @@ InstanceCVRPLIB::InstanceCVRPLIB(std::string pathToInstance, bool isRoundingInte
 					+ (y_coords[i] - y_coords[j]) * (y_coords[i] - y_coords[j])
 				);
 
-				// 中文注释：可选地将欧几里得距离四舍五入为整数，以符合一些基准实例的规定
+				// 可选地将欧几里得距离四舍五入为整数，以符合一些基准实例的规定
 				if (isRoundingInteger) dist_mtx[i][j] = round(dist_mtx[i][j]);
 			}
 		}
