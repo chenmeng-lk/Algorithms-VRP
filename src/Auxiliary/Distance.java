@@ -8,14 +8,14 @@ public class Distance
 	Node solutionB[];
 	Node solutionA[];
 	
-	public int pairwiseSolutionDistance(Solution a, Solution b)
+	public int pairwiseSolutionDistance(Solution a, Solution b)//计算两个解的距离
 	{
 		this.solutionB=b.getSolution();
 		this.solutionA=a.getSolution();
 		
 		int neigh;
 		int dist=0;
-		for (int i = 0; i < solutionA.length; i++)
+		for (int i = 0; i < solutionA.length; i++)//遍历客户节点
 		{
 			neigh=solutionA[i].next.name;
 			if(solutionB[i].next.name!=neigh&&neigh!=solutionB[i].prev.name)

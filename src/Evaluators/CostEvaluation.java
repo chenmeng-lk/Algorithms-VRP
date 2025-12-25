@@ -2,7 +2,7 @@ package Evaluators;
 
 import Data.Instance;
 import Solution.Node;
-
+//计算移动的成本变化
 public class CostEvaluation 
 {
 	Instance instance;
@@ -14,7 +14,7 @@ public class CostEvaluation
 	
 //	-------------------------------SHIFT------------------------------
 	
-	public double costSHIFT(Node a, Node b)
+	public double costSHIFT(Node a, Node b)//把a移动到b后面
 	{
 		 return instance.dist(a.prev.name,a.next.name)-instance.dist(a.name,a.prev.name)-instance.dist(a.name,a.next.name)+
 				instance.dist(a.name,b.name)+instance.dist(a.name,b.next.name)-instance.dist(b.name,b.next.name);
@@ -22,10 +22,10 @@ public class CostEvaluation
 		
 //	-------------------------------SWAP------------------------------
 	
-	public double costSWAP(Node a, Node b)
+	public double costSWAP(Node a, Node b)//交换a、b
 	{
-		if(a.next!=b&&a.prev!=b)
-		{
+		if(a.next!=b&&a.prev!=b)//a、b不相邻
+		{//交换a、b
 			return 	-(instance.dist(a.name,a.prev.name)+instance.dist(a.name,a.next.name)+
 					instance.dist(b.name,b.prev.name)+instance.dist(b.name,b.next.name))+				
 					(instance.dist(a.name,b.prev.name)+instance.dist(a.name,b.next.name)+
@@ -33,7 +33,7 @@ public class CostEvaluation
 		}
 		else
 		{
-			if(a.next==b)
+			if(a.next==b)//a、b之间的边成本不变
 				return 	-(instance.dist(a.name,a.prev.name)+instance.dist(b.name,b.next.name))+
 					(instance.dist(a.name,b.next.name)+instance.dist(b.name,a.prev.name));
 			else
@@ -42,7 +42,7 @@ public class CostEvaluation
 		}
 	}
 	
-	public double costSwapStar(Node a, Node b,Node prevA, Node prevB)
+	public double costSwapStar(Node a, Node b,Node prevA, Node prevB)//a插到preA后面，b插到preB后面
 	{
 		if(prevA.next.name!=b.name&&prevB.next.name!=a.name)
 		{
@@ -89,13 +89,13 @@ public class CostEvaluation
 	
 //		-------------------------------CROSS------------------------------
 
-	public double costCross(Node a, Node b)
+	public double costCross(Node a, Node b)//tail
 	{
 		 return -(instance.dist(a.name,a.next.name)+instance.dist(b.name,b.next.name))
 				 +(instance.dist(a.name,b.next.name)+instance.dist(b.name,a.next.name));
 	}
 	 
-	public double inversedCostCross(Node a, Node b)
+	public double inversedCostCross(Node a, Node b)//split
 	{
 		 return -(instance.dist(a.name,a.next.name)+instance.dist(b.name,b.next.name))
 				 +(instance.dist(a.name,b.name)+instance.dist(b.next.name,a.next.name));

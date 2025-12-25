@@ -24,7 +24,7 @@ public class DistAdjustment
 		this.stoppingCriterionType=config.getStoppingCriterionType();
 	}
 
-	public void distAdjustment()
+	public void distAdjustment()//调整迭代过程中新解与参考解的距离，随着算法收敛距离越来越短，idealDist从30->15
 	{
 		if(iterator==0)
 			ini=System.currentTimeMillis();

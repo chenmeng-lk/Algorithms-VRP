@@ -16,7 +16,7 @@ public class ExecuteMovement
 		this.instance = instance;
 	}
 
-	public void SWAP(Node a, Node b)
+	public void SWAP(Node a, Node b)//交换a、b
 	{
 		aRoute = a.route;
 		bRoute = b.route;
@@ -47,7 +47,7 @@ public class ExecuteMovement
 		}
 	}
 
-	public void SHIFT(Node a, Node b)
+	public void SHIFT(Node a, Node b)//把a插到b后
 	{
 		aRoute = a.route;
 		bRoute = b.route;
@@ -56,7 +56,7 @@ public class ExecuteMovement
 		bRoute.addAfter(a, b);
 	}
 
-	public void execute2Opt(Node a, Node b)
+	public void execute2Opt(Node a, Node b)//断开a->anext和b->bnext，连接a->b,anext->bnext，反转b到anext
 	{
 		double cost = cost2Opt(a, b);
 
@@ -65,7 +65,7 @@ public class ExecuteMovement
 		Node aux = a;
 		aux.next = b;
 		Node prev = aux.prev;
-		while(aux.next != aNext)
+		while(aux.next != aNext)//反转b到anext
 		{
 			prev = aux;
 			aux = aux.next;
@@ -75,11 +75,11 @@ public class ExecuteMovement
 
 		prev = aux;
 		aux = aux.next;
-		aux.next = bNext;
+		aux.next = bNext;//anext连接到bnext
 		aux.prev = prev;
 
 		prev = aux;
-		aux = aux.next;
+		aux = aux.next;//设置bnext的前驱是anext
 		aux.prev = prev;
 
 		a.route.fRoute += cost;
@@ -93,7 +93,7 @@ public class ExecuteMovement
 		+ (instance.dist(a.name, b.name) + instance.dist(a.next.name, b.next.name));
 	}
 
-	public void Cross(Node a, Node b)
+	public void Cross(Node a, Node b)//交换尾部
 	{
 		aRoute = a.route;
 		bRoute = b.route;
@@ -127,7 +127,7 @@ public class ExecuteMovement
 		Cross(a, b.prev);
 	}
 
-	public double apply(CandidateNode node)
+	public double apply(CandidateNode node)//根据移动类型执行对应的移动
 	{
 		switch(node.moveType) {
 		case SWAP:

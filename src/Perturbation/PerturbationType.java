@@ -1,5 +1,5 @@
 package Perturbation;
-
+//移除节点的启发式方法
 public enum PerturbationType 
 {
 	Sequential(0),

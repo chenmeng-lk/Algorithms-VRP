@@ -1,5 +1,5 @@
 package Perturbation;
-
+//添加节点的启发式方法
 public enum InsertionHeuristic 
 {
 	Distance(1),

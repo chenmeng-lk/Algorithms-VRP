@@ -21,7 +21,7 @@ import Solution.Solution;
 public class AILSII 
 {
 	//----------Problema------------
-	Solution solution,referenceSolution,bestSolution;
+	Solution solution,referenceSolution,bestSolution;//迭代解、参考解、最佳解
 	
 	Instance instance;
 	Distance pairwiseDistance;
@@ -121,39 +121,39 @@ public class AILSII
 
 	public void search()
 	{
-		iterator=0;
-		first=System.currentTimeMillis();
-		referenceSolution.numRoutes=instance.getMinNumberRoutes();
-		constructSolution.construct(referenceSolution);
+		iterator=0;//迭代次数
+		first=System.currentTimeMillis();//开始时间
+		referenceSolution.numRoutes=instance.getMinNumberRoutes();//由实例文件读取过程计算，为ceil(total_demand/capacity)
+		constructSolution.construct(referenceSolution);//构造初始解
 		
-		feasibilityOperator.makeFeasible(referenceSolution);
-		localSearch.localSearch(referenceSolution,true);
-		bestSolution.clone(referenceSolution);
-		while(!stoppingCriterion())
+		feasibilityOperator.makeFeasible(referenceSolution);//可行化
+		localSearch.localSearch(referenceSolution,true);//局部搜索优化
+		bestSolution.clone(referenceSolution);//记录最佳解
+		while(!stoppingCriterion())//迭代未达到停止条件
 		{
 			iterator++;
 
-			solution.clone(referenceSolution);
+			solution.clone(referenceSolution);//复制参考解，得到的迭代解进行修改，有概率接受新解
 			
-			selectedPerturbation=pertubOperators[rand.nextInt(pertubOperators.length)];
-			selectedPerturbation.applyPerturbation(solution);
-			feasibilityOperator.makeFeasible(solution);
-			localSearch.localSearch(solution,true);
-			distanceLS=pairwiseDistance.pairwiseSolutionDistance(solution,referenceSolution);
+			selectedPerturbation=pertubOperators[rand.nextInt(pertubOperators.length)];//扰动参数
+			selectedPerturbation.applyPerturbation(solution);//扰动
+			feasibilityOperator.makeFeasible(solution);//可行化
+			localSearch.localSearch(solution,true);//局部搜索
+			distanceLS=pairwiseDistance.pairwiseSolutionDistance(solution,referenceSolution);//新解与参考解的距离
 			
-			evaluateSolution();
-			distAdjustment.distAdjustment();
+			evaluateSolution();//比较新解与最佳解看是否更新最佳解
+			distAdjustment.distAdjustment();////调整迭代过程中新解与参考解的距离控制参数
 			
-			selectedPerturbation.getChosenOmega().setDistance(distanceLS);//update
+			selectedPerturbation.getChosenOmega().setDistance(distanceLS);//update 更新扰动值
 			
-			if(acceptanceCriterion.acceptSolution(solution))
+			if(acceptanceCriterion.acceptSolution(solution))//概率接受新解
 				referenceSolution.clone(solution);
 		}
 		
-		totalTime=(double)(System.currentTimeMillis()-first)/1000;
+		totalTime=(double)(System.currentTimeMillis()-first)/1000;//算法执行总时间
 	}
 	
-	public void evaluateSolution()
+	public void evaluateSolution()//比较新解与最佳解
 	{
 		if((solution.f-bestF)<-epsilon)
 		{		
@@ -195,13 +195,13 @@ public class AILSII
 	public static void main(String[] args) 
 	{
 		InputParameters reader=new InputParameters();
-		reader.readingInput(args);
+		reader.readingInput(args);//读取命令行参数
 		
-		Instance instance=new Instance(reader);
+		Instance instance=new Instance(reader);//读取实例文件
 		
 		AILSII ailsII=new AILSII(instance,reader);
 		
-		ailsII.search();
+		ailsII.search();//调用搜索
 	}
 	
 	public Solution getBestSolution() {
