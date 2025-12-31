@@ -186,7 +186,7 @@ public class FeasibilityPhase
 			searchBestCross(route);
 		}
 	}
-	
+	//TODO:根据原始解与移动后解之间的成本差异与可行性增益之比来对移动排序
 	public void calculateCost() // 计算评估成本，每单位容量节省的成本变化=成本变化值除以容量节省量
 	{
 		if(cost>=0)//当成本增加时额外加1以避免零除
