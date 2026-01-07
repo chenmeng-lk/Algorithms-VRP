@@ -34,22 +34,22 @@ public:
     using Visits = std::vector<Client>;
 
 private:
-    Visits visits_;
+    Visits visits_;  // 此行程访问的客户列表
 
-    Distance distance_ = 0;         // Total travel distance on this trip
-    std::vector<Load> delivery_;    // Total delivery amount served on this trip
-    std::vector<Load> pickup_;      // Total pickup amount gathered on this trip
-    std::vector<Load> load_;        // Load on this trip
-    std::vector<Load> excessLoad_;  // Excess pickup or delivery demand
-    Duration travel_ = 0;           // Total *travel* duration on this trip
-    Duration service_ = 0;          // Total *service* duration on this trip
-    Duration release_ = 0;          // Release time of this trip
-    Cost prizes_ = 0;               // Total value of prizes on this trip
+    Distance distance_ = 0;         // Total travel distance on this trip 此行程的总行驶距离
+    std::vector<Load> delivery_;    // Total delivery amount served on this trip 此行程服务的总配送量
+    std::vector<Load> pickup_;      // Total pickup amount gathered on this trip 此行程收集的总拾取量
+    std::vector<Load> load_;        // Load on this trip 此行程的负载
+    std::vector<Load> excessLoad_;  // Excess pickup or delivery demand 超额拾取或配送需求
+    Duration travel_ = 0;           // Total *travel* duration on this trip 此行程的总*行驶*持续时间
+    Duration service_ = 0;          // Total *service* duration on this trip 此行程的总*服务*持续时间
+    Duration release_ = 0;          // Release time of this trip 此行程的释放时间
+    Cost prizes_ = 0;               // Total value of prizes on this trip 此行程的总奖励值
 
-    std::pair<Coordinate, Coordinate> centroid_;  // Trip center
-    size_t vehicleType_;                          // Type of vehicle
-    size_t startDepot_;                           // assigned start location
-    size_t endDepot_;                             // assigned end location
+    std::pair<Coordinate, Coordinate> centroid_;  // Trip center 行程中心点
+    size_t vehicleType_;                          // Type of vehicle 车辆类型
+    size_t startDepot_;                           // assigned start location 分配的起始位置
+    size_t endDepot_;                             // assigned end location 分配的结束位置
 
 public:
     [[nodiscard]] bool empty() const;
@@ -104,42 +104,50 @@ public:
 
     /**
      * Total duration of travel on this trip.
+     * 此行程的总行驶持续时间
      */
     [[nodiscard]] Duration travelDuration() const;
 
     /**
      * Earliest time at which this trip can leave the depot. Follows from the
      * release times of clients visited on this trip.
+     * 此行程可以离开仓库的最早时间。遵循此行程访问的客户的释放时间。
      */
     [[nodiscard]] Duration releaseTime() const;
 
     /**
      * Total prize value collected on this trip.
+     * 此行程收集的总奖励值
      */
     [[nodiscard]] Cost prizes() const;
 
     /**
      * Center point of the client locations on this trip.
+     * 此行程的客户位置中心点
      */
     [[nodiscard]] std::pair<Coordinate, Coordinate> const &centroid() const;
 
     /**
      * Index of the type of vehicle used on this trip.
+     * 此行程使用的车辆类型的索引
      */
     [[nodiscard]] size_t vehicleType() const;
 
     /**
      * Location index of the trip's starting depot.
+     * 行程的起始仓库位置索引
      */
     [[nodiscard]] size_t startDepot() const;
 
     /**
      * Location index of the trip's ending depot.
+     * 行程的结束仓库位置索引
      */
     [[nodiscard]] size_t endDepot() const;
 
     /**
      * Returns whether this trip violates capacity constraints.
+     * 返回此行程是否违反容量约束
      */
     [[nodiscard]] bool hasExcessLoad() const;
 

@@ -21,7 +21,7 @@ from ._search import SwapStar as SwapStar
 from ._search import SwapTails as SwapTails
 from .neighbourhood import NeighbourhoodParams as NeighbourhoodParams
 from .neighbourhood import compute_neighbours as compute_neighbours
-
+#节点算子
 NODE_OPERATORS: list[Type[NodeOperator]] = [
     Exchange10,
     Exchange20,

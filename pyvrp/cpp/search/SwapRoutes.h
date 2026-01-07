@@ -11,10 +11,12 @@ namespace pyvrp::search
  *
  * This operator evaluates exchanging the visits of two routes :math:`U` and
  * :math:`V`.
+ * 在两条路径的起点仓库之后交换整个路径
+ * 利用车辆类型的差异性来优化整体解决方案
  */
 class SwapRoutes : public RouteOperator
 {
-    SwapTails op;
+    SwapTails op;  // 使用SwapTails算子来实现路径交换
 
 public:
     Cost

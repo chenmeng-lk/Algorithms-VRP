@@ -1,3 +1,9 @@
+/*
+这个文件是`pyvrp`库的Python绑定实现文件，使用pybind11将C++核心类
+（如`ProblemData`、`Solution`、`Route`、`CostEvaluator`等）暴露
+给Python接口，使Python代码能够调用C++实现的高性能VRP（车辆路径问题）
+求解算法，包括问题数据建模、解决方案构建、成本评估等功能。
+*/
 #include "bindings.h"
 #include "CostEvaluator.h"
 #include "DurationSegment.h"
@@ -35,35 +41,35 @@ using pyvrp::Route;
 using pyvrp::Solution;
 using pyvrp::Trip;
 
-PYBIND11_MODULE(_pyvrp, m)
+PYBIND11_MODULE(_pyvrp, m)  // 定义Python模块_pyvrp，这是主要的绑定入口点
 {
-    py::class_<DynamicBitset>(m, "DynamicBitset", DOC(pyvrp, DynamicBitset))
-        .def(py::init<size_t>(), py::arg("num_bits"))
-        .def(py::self == py::self, py::arg("other"))  // this is __eq__
-        .def("all", &DynamicBitset::all)
-        .def("any", &DynamicBitset::any)
-        .def("none", &DynamicBitset::none)
-        .def("count", &DynamicBitset::count)
-        .def("__len__", &DynamicBitset::size)
-        .def("set", &DynamicBitset::set)
-        .def("reset", &DynamicBitset::reset)
+    py::class_<DynamicBitset>(m, "DynamicBitset", DOC(pyvrp, DynamicBitset))  // 绑定DynamicBitset类到Python
+        .def(py::init<size_t>(), py::arg("num_bits"))  // 构造函数，接受一个参数
+        .def(py::self == py::self, py::arg("other"))  // this is __eq__ 定义相等操作符
+        .def("all", &DynamicBitset::all)  // 绑定all方法
+        .def("any", &DynamicBitset::any)  // 绑定any方法
+        .def("none", &DynamicBitset::none)  // 绑定none方法
+        .def("count", &DynamicBitset::count)  // 绑定count方法
+        .def("__len__", &DynamicBitset::size)  // 绑定__len__特殊方法
+        .def("set", &DynamicBitset::set)  // 绑定set方法
+        .def("reset", &DynamicBitset::reset)  // 绑定reset方法
         .def(
             "__getitem__",
-            [](DynamicBitset const &bitset, size_t idx) { return bitset[idx]; },
+            [](DynamicBitset const &bitset, size_t idx) { return bitset[idx]; },  // 绑定索引访问操作
             py::arg("idx"))
         .def(
             "__setitem__",
             [](DynamicBitset &bitset, size_t idx, bool value)
-            { bitset[idx] = value; },
+            { bitset[idx] = value; },  // 绑定索引赋值操作
             py::arg("idx"),
             py::arg("value"))
-        .def("__or__", &DynamicBitset::operator|, py::arg("other"))
-        .def("__and__", &DynamicBitset::operator&, py::arg("other"))
-        .def("__xor__", &DynamicBitset::operator^, py::arg("other"))
-        .def("__invert__", &DynamicBitset::operator~);
+        .def("__or__", &DynamicBitset::operator|, py::arg("other"))  // 绑定或操作符
+        .def("__and__", &DynamicBitset::operator&, py::arg("other"))  // 绑定与操作符
+        .def("__xor__", &DynamicBitset::operator^, py::arg("other"))  // 绑定异或操作符
+        .def("__invert__", &DynamicBitset::operator~);  // 绑定取反操作符
 
     py::class_<ProblemData::Client>(
-        m, "Client", DOC(pyvrp, ProblemData, Client))
+        m, "Client", DOC(pyvrp, ProblemData, Client))  // 绑定ProblemData::Client类
         .def(py::init<pyvrp::Coordinate,
                       pyvrp::Coordinate,
                       std::vector<pyvrp::Load>,
@@ -78,7 +84,7 @@ PYBIND11_MODULE(_pyvrp, m)
                       char const *>(),
              py::arg("x"),
              py::arg("y"),
-             py::arg("delivery") = py::list(),
+             py::arg("delivery") = py::list(),  // 默认参数
              py::arg("pickup") = py::list(),
              py::arg("service_duration") = 0,
              py::arg("tw_early") = 0,
@@ -87,13 +93,13 @@ PYBIND11_MODULE(_pyvrp, m)
              py::arg("prize") = 0,
              py::arg("required") = true,
              py::arg("group") = py::none(),
-             py::kw_only(),
+             py::kw_only(),  // 后面的参数必须是关键字参数
              py::arg("name") = "")
-        .def_readonly("x", &ProblemData::Client::x)
-        .def_readonly("y", &ProblemData::Client::y)
+        .def_readonly("x", &ProblemData::Client::x)  // 暴露只读属性x
+        .def_readonly("y", &ProblemData::Client::y)  // 暴露只读属性y
         .def_readonly("delivery",
                       &ProblemData::Client::delivery,
-                      py::return_value_policy::reference_internal)
+                      py::return_value_policy::reference_internal)  // 返回内部引用
         .def_readonly("pickup",
                       &ProblemData::Client::pickup,
                       py::return_value_policy::reference_internal)
@@ -107,9 +113,9 @@ PYBIND11_MODULE(_pyvrp, m)
         .def_readonly("name",
                       &ProblemData::Client::name,
                       py::return_value_policy::reference_internal)
-        .def(py::self == py::self)  // this is __eq__
+        .def(py::self == py::self)  // this is __eq__ 定义相等操作符
         .def(py::pickle(
-            [](ProblemData::Client const &client) {  // __getstate__
+            [](ProblemData::Client const &client) {  // __getstate__ 序列化函数
                 return py::make_tuple(client.x,
                                       client.y,
                                       client.delivery,
@@ -123,7 +129,7 @@ PYBIND11_MODULE(_pyvrp, m)
                                       client.group,
                                       client.name);
             },
-            [](py::tuple t) {  // __setstate__
+            [](py::tuple t) {  // __setstate__ 反序列化函数
                 ProblemData::Client client(
                     t[0].cast<pyvrp::Coordinate>(),         // x
                     t[1].cast<pyvrp::Coordinate>(),         // y
@@ -143,9 +149,9 @@ PYBIND11_MODULE(_pyvrp, m)
         .def(
             "__str__",
             [](ProblemData::Client const &client) { return client.name; },
-            py::return_value_policy::reference_internal);
+            py::return_value_policy::reference_internal);  // 定义字符串表示
 
-    py::class_<ProblemData::Depot>(m, "Depot", DOC(pyvrp, ProblemData, Depot))
+    py::class_<ProblemData::Depot>(m, "Depot", DOC(pyvrp, ProblemData, Depot))  // 绑定ProblemData::Depot类
         .def(py::init<pyvrp::Coordinate,
                       pyvrp::Coordinate,
                       pyvrp::Duration,
@@ -186,7 +192,7 @@ PYBIND11_MODULE(_pyvrp, m)
             py::return_value_policy::reference_internal);
 
     py::class_<ProblemData::ClientGroup>(
-        m, "ClientGroup", DOC(pyvrp, ProblemData, ClientGroup))
+        m, "ClientGroup", DOC(pyvrp, ProblemData, ClientGroup))  // 绑定ProblemData::ClientGroup类
         .def(py::init<std::vector<size_t>, bool, char const *>(),
              py::arg("clients") = py::list(),
              py::arg("required") = true,
@@ -194,11 +200,11 @@ PYBIND11_MODULE(_pyvrp, m)
              py::arg("name") = "")
         .def("add_client",
              &ProblemData::ClientGroup::addClient,
-             py::arg("client"))
-        .def("clear", &ProblemData::ClientGroup::clear)
+             py::arg("client"))  // 绑定add_client方法
+        .def("clear", &ProblemData::ClientGroup::clear)  // 绑定clear方法
         .def_property_readonly("clients",
                                &ProblemData::ClientGroup::clients,
-                               py::return_value_policy::reference_internal)
+                               py::return_value_policy::reference_internal)  // 只读属性clients
         .def_readonly("required", &ProblemData::ClientGroup::required)
         .def_readonly("mutually_exclusive",
                       &ProblemData::ClientGroup::mutuallyExclusive)
@@ -219,11 +225,11 @@ PYBIND11_MODULE(_pyvrp, m)
 
                 return group;
             }))
-        .def("__len__", &ProblemData::ClientGroup::size)
+        .def("__len__", &ProblemData::ClientGroup::size)  // 绑定__len__方法
         .def(
             "__iter__",
             [](ProblemData::ClientGroup const &group)
-            { return py::make_iterator(group.begin(), group.end()); },
+            { return py::make_iterator(group.begin(), group.end()); },  // 绑定迭代器
             py::return_value_policy::reference_internal)
         .def(
             "__str__",
@@ -231,7 +237,7 @@ PYBIND11_MODULE(_pyvrp, m)
             py::return_value_policy::reference_internal);
 
     py::class_<ProblemData::VehicleType>(
-        m, "VehicleType", DOC(pyvrp, ProblemData, VehicleType))
+        m, "VehicleType", DOC(pyvrp, ProblemData, VehicleType))  // 绑定ProblemData::VehicleType类
         .def(py::init<size_t,
                       std::vector<pyvrp::Load>,
                       size_t,
@@ -302,12 +308,12 @@ PYBIND11_MODULE(_pyvrp, m)
         .def_readonly("unit_overtime_cost",
                       &ProblemData::VehicleType::unitOvertimeCost)
         .def_readonly("max_duration", &ProblemData::VehicleType::maxDuration)
-        .def_property_readonly("max_trips", &ProblemData::VehicleType::maxTrips)
+        .def_property_readonly("max_trips", &ProblemData::VehicleType::maxTrips)  // 计算属性max_trips
         .def_readonly("name",
                       &ProblemData::VehicleType::name,
                       py::return_value_policy::reference_internal)
         .def("replace",
-             &ProblemData::VehicleType::replace,
+             &ProblemData::VehicleType::replace,  // 绑定replace方法，用于创建修改后的副本
              py::arg("num_available") = py::none(),
              py::arg("capacity") = py::none(),
              py::arg("start_depot") = py::none(),
@@ -382,7 +388,7 @@ PYBIND11_MODULE(_pyvrp, m)
             { return vehType.name; },
             py::return_value_policy::reference_internal);
 
-    py::class_<ProblemData>(m, "ProblemData", DOC(pyvrp, ProblemData))
+    py::class_<ProblemData>(m, "ProblemData", DOC(pyvrp, ProblemData))  // 绑定ProblemData类
         .def(py::init<std::vector<ProblemData::Client>,
                       std::vector<ProblemData::Depot>,
                       std::vector<ProblemData::VehicleType>,
@@ -396,7 +402,7 @@ PYBIND11_MODULE(_pyvrp, m)
              py::arg("duration_matrices"),
              py::arg("groups") = py::list())
         .def("replace",
-             &ProblemData::replace,
+             &ProblemData::replace,  // 绑定replace方法
              py::arg("clients") = py::none(),
              py::arg("depots") = py::none(),
              py::arg("vehicle_types") = py::none(),
@@ -406,7 +412,7 @@ PYBIND11_MODULE(_pyvrp, m)
              DOC(pyvrp, ProblemData, replace))
         .def_property_readonly("num_clients",
                                &ProblemData::numClients,
-                               DOC(pyvrp, ProblemData, numClients))
+                               DOC(pyvrp, ProblemData, numClients))  // 只读属性num_clients
         .def_property_readonly("num_depots",
                                &ProblemData::numDepots,
                                DOC(pyvrp, ProblemData, numDepots))
@@ -434,18 +440,18 @@ PYBIND11_MODULE(_pyvrp, m)
                size_t idx) -> std::variant<ProblemData::Client const *,
                                            ProblemData::Depot const *>
             {
-                if (idx >= data.numLocations())
+                if (idx >= data.numLocations())  // 边界检查
                     throw py::index_error();
 
                 auto const proxy = data.location(idx);
-                if (idx < data.numDepots())
+                if (idx < data.numDepots())  // 根据索引判断是Depot还是Client
                     return proxy.depot;
                 else
                     return proxy.client;
             },
             py::arg("idx"),
             py::return_value_policy::reference_internal,
-            DOC(pyvrp, ProblemData, location))
+            DOC(pyvrp, ProblemData, location))  // location方法，返回位置（可能是Client或Depot）
         .def("clients",
              &ProblemData::clients,
              py::return_value_policy::reference_internal,
@@ -496,7 +502,7 @@ PYBIND11_MODULE(_pyvrp, m)
              DOC(pyvrp, ProblemData, durationMatrix))
         .def("has_time_windows",
              &ProblemData::hasTimeWindows,
-             DOC(pyvrp, ProblemData, hasTimeWindows))
+             DOC(pyvrp, ProblemData, hasTimeWindows))  // 检查是否有时间窗口约束
         .def(py::self == py::self)  // this is __eq__
         .def(py::pickle(
             [](ProblemData const &data) {  // __getstate__
@@ -525,7 +531,7 @@ PYBIND11_MODULE(_pyvrp, m)
                 return data;
             }));
 
-    py::class_<Trip>(m, "Trip", DOC(pyvrp, Trip))
+    py::class_<Trip>(m, "Trip", DOC(pyvrp, Trip))  // 绑定Trip类
         .def(py::init<ProblemData const &,
                       std::vector<size_t>,
                       size_t,
@@ -584,7 +590,7 @@ PYBIND11_MODULE(_pyvrp, m)
             [](Trip const &trip, int idx)
             {
                 // int so we also support negative offsets from the end.
-                idx = idx < 0 ? trip.size() + idx : idx;
+                idx = idx < 0 ? trip.size() + idx : idx;  // 支持负索引
                 if (idx < 0 || static_cast<size_t>(idx) >= trip.size())
                     throw py::index_error();
                 return trip[idx];
@@ -639,7 +645,7 @@ PYBIND11_MODULE(_pyvrp, m)
              });
 
     py::class_<Route::ScheduledVisit>(
-        m, "ScheduledVisit", DOC(pyvrp, Route, ScheduledVisit))
+        m, "ScheduledVisit", DOC(pyvrp, Route, ScheduledVisit))  // 绑定Route::ScheduledVisit类
         .def_readonly("location", &Route::ScheduledVisit::location)
         .def_readonly("trip", &Route::ScheduledVisit::trip)
         .def_readonly("start_service", &Route::ScheduledVisit::startService)
@@ -647,7 +653,7 @@ PYBIND11_MODULE(_pyvrp, m)
         .def_readonly("wait_duration", &Route::ScheduledVisit::waitDuration)
         .def_readonly("time_warp", &Route::ScheduledVisit::timeWarp)
         .def_property_readonly("service_duration",
-                               &Route::ScheduledVisit::serviceDuration)
+                               &Route::ScheduledVisit::serviceDuration)  // 计算属性service_duration
         .def(py::pickle(
             [](Route::ScheduledVisit const &visit) {  // __getstate__
                 return py::make_tuple(visit.location,
@@ -669,7 +675,7 @@ PYBIND11_MODULE(_pyvrp, m)
                 return visit;
             }));
 
-    py::class_<Route>(m, "Route", DOC(pyvrp, Route))
+    py::class_<Route>(m, "Route", DOC(pyvrp, Route))  // 绑定Route类
         .def(py::init<ProblemData const &, std::vector<size_t>, size_t>(),
              py::arg("data"),
              py::arg("visits"),
@@ -747,7 +753,7 @@ PYBIND11_MODULE(_pyvrp, m)
         .def("has_time_warp",
              &Route::hasTimeWarp,
              DOC(pyvrp, Route, hasTimeWarp))
-        .def("schedule", &Route::schedule, DOC(pyvrp, Route, schedule))
+        .def("schedule", &Route::schedule, DOC(pyvrp, Route, schedule))  // 获取调度信息
         .def("__len__", &Route::size, DOC(pyvrp, Route, size))
         .def(
             "__iter__",
@@ -759,7 +765,7 @@ PYBIND11_MODULE(_pyvrp, m)
             [](Route const &route, int idx)
             {
                 // conditional so we support negative offsets from the end.
-                return route[idx < 0 ? route.size() + idx : idx];
+                return route[idx < 0 ? route.size() + idx : idx];  // 支持负索引
             },
             py::arg("idx"))
         .def(py::self == py::self)  // this is __eq__
@@ -828,12 +834,15 @@ PYBIND11_MODULE(_pyvrp, m)
              });
 
     py::class_<Solution, std::shared_ptr<Solution>>(
-        m, "Solution", DOC(pyvrp, Solution))
+        m, "Solution", DOC(pyvrp, Solution))  // 绑定Solution类，使用shared_ptr管理
         // Since Route implements __len__ and __getitem__, it is convertible to
         // std::vector<size_t> and thus a list of Routes is a valid argument for
         // both constructors. We want to avoid using the second constructor
         // since that would lose the vehicle type associations. As pybind11
         // will use the first matching constructor we put this one first.
+        // 由于Route实现了__len__和__getitem__，它可以转换为std::vector<size_t>，
+        // 因此Route列表对两个构造函数都是有效参数。我们想避免使用第二个构造函数，
+        // 因为那会丢失车辆类型关联。由于pybind11会使用第一个匹配的构造函数，我们把这个放在前面。
         .def(py::init<ProblemData const &, std::vector<Route>>(),
              py::arg("data"),
              py::arg("routes"))
@@ -853,7 +862,7 @@ PYBIND11_MODULE(_pyvrp, m)
                     { return Solution(data, rng); },
                     py::arg("data"),
                     py::arg("rng"),
-                    DOC(pyvrp, Solution, Solution));
+                    DOC(pyvrp, Solution, Solution));  // 静态方法make_random，用于创建随机解
             })
         .def(
             "num_routes", &Solution::numRoutes, DOC(pyvrp, Solution, numRoutes))
@@ -913,13 +922,13 @@ PYBIND11_MODULE(_pyvrp, m)
         .def("uncollected_prizes",
              &Solution::uncollectedPrizes,
              DOC(pyvrp, Solution, uncollectedPrizes))
-        .def("__copy__", [](Solution const &sol) { return Solution(sol); })
+        .def("__copy__", [](Solution const &sol) { return Solution(sol); })  // 浅拷贝
         .def(
             "__deepcopy__",
-            [](Solution const &sol, py::dict) { return Solution(sol); },
+            [](Solution const &sol, py::dict) { return Solution(sol); },  // 深拷贝
             py::arg("memo"))
         .def("__hash__",
-             [](Solution const &sol) { return std::hash<Solution>()(sol); })
+             [](Solution const &sol) { return std::hash<Solution>()(sol); })  // 哈希函数
         .def(py::self == py::self)  // this is __eq__
         .def(py::pickle(
             [](Solution const &sol) {  // __getstate__
@@ -974,7 +983,7 @@ PYBIND11_MODULE(_pyvrp, m)
                  return stream.str();
              });
 
-    py::class_<CostEvaluator>(m, "CostEvaluator", DOC(pyvrp, CostEvaluator))
+    py::class_<CostEvaluator>(m, "CostEvaluator", DOC(pyvrp, CostEvaluator))  // 绑定CostEvaluator类
         .def(py::init<std::vector<double>, double, double>(),
              py::arg("load_penalties"),
              py::arg("tw_penalty"),
@@ -984,26 +993,26 @@ PYBIND11_MODULE(_pyvrp, m)
              py::arg("load"),
              py::arg("capacity"),
              py::arg("dimension"),
-             DOC(pyvrp, CostEvaluator, loadPenalty))
+             DOC(pyvrp, CostEvaluator, loadPenalty))  // 计算负载惩罚
         .def("tw_penalty",
              &CostEvaluator::twPenalty,
              py::arg("time_warp"),
-             DOC(pyvrp, CostEvaluator, twPenalty))
+             DOC(pyvrp, CostEvaluator, twPenalty))  // 计算时间窗口惩罚
         .def("dist_penalty",
              &CostEvaluator::distPenalty,
              py::arg("distance"),
              py::arg("max_distance"),
-             DOC(pyvrp, CostEvaluator, distPenalty))
+             DOC(pyvrp, CostEvaluator, distPenalty))  // 计算距离惩罚
         .def("penalised_cost",
              &CostEvaluator::penalisedCost<Solution>,
              py::arg("solution"),
-             DOC(pyvrp, CostEvaluator, penalisedCost))
+             DOC(pyvrp, CostEvaluator, penalisedCost))  // 计算惩罚后的成本
         .def("cost",
              &CostEvaluator::cost<Solution>,
              py::arg("solution"),
-             DOC(pyvrp, CostEvaluator, cost));
+             DOC(pyvrp, CostEvaluator, cost));  // 计算成本
 
-    py::class_<LoadSegment>(m, "LoadSegment", DOC(pyvrp, LoadSegment))
+    py::class_<LoadSegment>(m, "LoadSegment", DOC(pyvrp, LoadSegment))  // 绑定LoadSegment类
         .def(py::init<pyvrp::Load, pyvrp::Load, pyvrp::Load, pyvrp::Load>(),
              py::arg("delivery"),
              py::arg("pickup"),
@@ -1017,13 +1026,13 @@ PYBIND11_MODULE(_pyvrp, m)
         .def("excess_load",
              &LoadSegment::excessLoad,
              py::arg("capacity"),
-             DOC(pyvrp, LoadSegment, excessLoad))
+             DOC(pyvrp, LoadSegment, excessLoad))  // 计算超额负载
         .def("finalise",
              &LoadSegment::finalise,
              py::arg("capacity"),
-             DOC(pyvrp, LoadSegment, finalise))
+             DOC(pyvrp, LoadSegment, finalise))  // 最终化负载段
         .def_static(
-            "merge", &LoadSegment::merge, py::arg("first"), py::arg("second"))
+            "merge", &LoadSegment::merge, py::arg("first"), py::arg("second"))  // 静态方法merge
         .def("__str__",
              [](LoadSegment const &segment)
              {
@@ -1033,7 +1042,7 @@ PYBIND11_MODULE(_pyvrp, m)
              });
 
     py::class_<DurationSegment>(
-        m, "DurationSegment", DOC(pyvrp, DurationSegment))
+        m, "DurationSegment", DOC(pyvrp, DurationSegment))  // 绑定DurationSegment类
         .def(py::init<pyvrp::Duration,
                       pyvrp::Duration,
                       pyvrp::Duration,
@@ -1056,10 +1065,10 @@ PYBIND11_MODULE(_pyvrp, m)
              DOC(pyvrp, DurationSegment, duration))
         .def("finalise_back",
              &DurationSegment::finaliseBack,
-             DOC(pyvrp, DurationSegment, finaliseBack))
+             DOC(pyvrp, DurationSegment, finaliseBack))  // 向后最终化
         .def("finalise_front",
              &DurationSegment::finaliseFront,
-             DOC(pyvrp, DurationSegment, finaliseFront))
+             DOC(pyvrp, DurationSegment, finaliseFront))  // 向前最终化
         .def("start_early",
              &DurationSegment::startEarly,
              DOC(pyvrp, DurationSegment, startEarly))
@@ -1080,17 +1089,17 @@ PYBIND11_MODULE(_pyvrp, m)
              DOC(pyvrp, DurationSegment, releaseTime))
         .def("slack",
              &DurationSegment::slack,
-             DOC(pyvrp, DurationSegment, slack))
+             DOC(pyvrp, DurationSegment, slack))  // 计算松弛时间
         .def("time_warp",
              &DurationSegment::timeWarp,
              py::arg("max_duration")
              = std::numeric_limits<pyvrp::Duration>::max(),
-             DOC(pyvrp, DurationSegment, timeWarp))
+             DOC(pyvrp, DurationSegment, timeWarp))  // 计算时间扭曲
         .def_static("merge",
                     &DurationSegment::merge,
                     py::arg("edge_duration"),
                     py::arg("first"),
-                    py::arg("second"))
+                    py::arg("second"))  // 静态方法merge
         .def("__str__",
              [](DurationSegment const &segment)
              {
@@ -1100,13 +1109,13 @@ PYBIND11_MODULE(_pyvrp, m)
              });
 
     py::class_<RandomNumberGenerator>(
-        m, "RandomNumberGenerator", DOC(pyvrp, RandomNumberGenerator))
+        m, "RandomNumberGenerator", DOC(pyvrp, RandomNumberGenerator))  // 绑定RandomNumberGenerator类
         .def(py::init<uint32_t>(), py::arg("seed"))
         .def(py::init<std::array<uint32_t, 4>>(), py::arg("state"))
-        .def("min", &RandomNumberGenerator::min)
-        .def("max", &RandomNumberGenerator::max)
-        .def("__call__", &RandomNumberGenerator::operator())
-        .def("rand", &RandomNumberGenerator::rand)
-        .def("randint", &RandomNumberGenerator::randint<int>, py::arg("high"))
-        .def("state", &RandomNumberGenerator::state);
+        .def("min", &RandomNumberGenerator::min)  // 最小可能值
+        .def("max", &RandomNumberGenerator::max)  // 最大可能值
+        .def("__call__", &RandomNumberGenerator::operator())  // 调用操作符
+        .def("rand", &RandomNumberGenerator::rand)  // 生成随机浮点数
+        .def("randint", &RandomNumberGenerator::randint<int>, py::arg("high"))  // 生成随机整数
+        .def("state", &RandomNumberGenerator::state);  // 获取状态
 }

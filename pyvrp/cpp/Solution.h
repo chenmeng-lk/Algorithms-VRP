@@ -42,31 +42,33 @@ class Solution
     using Depot = size_t;
     using VehicleType = size_t;
 
-    using Routes = std::vector<Route>;
-    using Neighbours = std::vector<std::optional<std::pair<Client, Client>>>;
+    using Routes = std::vector<Route>;  // 路线列表类型
+    using Neighbours = std::vector<std::optional<std::pair<Client, Client>>>;  // 邻居列表类型（每个客户的[前驱, 后继]对）
 
-    size_t numClients_ = 0;         // Number of clients in the solution
-    size_t numMissingClients_ = 0;  // Number of required but missing clients
-    Distance distance_ = 0;         // Total travel distance over all routes
-    Cost distanceCost_ = 0;         // Total cost of all routes' travel distance
-    Duration duration_ = 0;         // Total duration over all routes
-    Duration overtime_ = 0;         // Total overtime over all routes
-    Cost durationCost_ = 0;         // Total cost of all routes' duration
-    Distance excessDistance_ = 0;   // Total excess distance over all routes
-    std::vector<Load> excessLoad_;  // Total excess load over all routes
-    Cost fixedVehicleCost_ = 0;     // Fixed cost of all used vehicles
-    Cost prizes_ = 0;               // Total collected prize value
-    Cost uncollectedPrizes_ = 0;    // Total uncollected prize value
-    Duration timeWarp_ = 0;         // Total time warp over all routes
-    bool isGroupFeas_ = true;       // Is feasible w.r.t. client groups?
+    size_t numClients_ = 0;         // Number of clients in the solution 解中的客户数量
+    size_t numMissingClients_ = 0;  // Number of required but missing clients 必需但缺失的客户数量
+    Distance distance_ = 0;         // Total travel distance over all routes 所有路线的总行驶距离
+    Cost distanceCost_ = 0;         // Total cost of all routes' travel distance 所有路线行驶距离的总成本
+    Duration duration_ = 0;         // Total duration over all routes 所有路线的总持续时间
+    Duration overtime_ = 0;         // Total overtime over all routes 所有路线的总加班时间
+    Cost durationCost_ = 0;         // Total cost of all routes' duration 所有路线持续时间的总成本
+    Distance excessDistance_ = 0;   // Total excess distance over all routes 所有路线的超额距离总和
+    std::vector<Load> excessLoad_;  // Total excess load over all routes 所有路线的超额负载总和
+    Cost fixedVehicleCost_ = 0;     // Fixed cost of all used vehicles 所有使用车辆的固定成本
+    Cost prizes_ = 0;               // Total collected prize value 收集的总奖励值
+    Cost uncollectedPrizes_ = 0;    // Total uncollected prize value 未收集的总奖励值
+    Duration timeWarp_ = 0;         // Total time warp over all routes 所有路线的总时间扭曲
+    bool isGroupFeas_ = true;       // Is feasible w.r.t. client groups? 关于客户组是否可行
 
-    Routes routes_;
-    Neighbours neighbours_;  // client [pred, succ] pairs, null if unassigned
+    Routes routes_;  // 路线列表
+    Neighbours neighbours_;  // client [pred, succ] pairs, null if unassigned 客户[前驱, 后继]对，如果未分配则为null
 
     // Determines the [pred, succ] pairs for assigned clients.
+    // 确定已分配客户的[前驱, 后继]对
     void makeNeighbours();
 
     // Evaluates this solution's characteristics.
+    // 评估此解的特征
     void evaluate(ProblemData const &data);
 
     // These are only available within a solution; from the outside a solution

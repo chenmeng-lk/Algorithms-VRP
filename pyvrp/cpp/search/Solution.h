@@ -27,22 +27,31 @@ namespace pyvrp::search
  * wrapper around nodes and routes. Ensuring the solution remains valid is
  * up to the interacting code.
  */
+// 解决方案类：用于本地搜索的高效修改的路径解决方案表示
 class Solution
 {
-    ProblemData const &data_;
+    ProblemData const &data_;  // 问题数据引用，包含所有位置和车辆信息
 
 public:
+    // 所有位置（包括仓库和客户）的节点向量，大小为numLocations()
     std::vector<Route::Node> nodes;  // size numLocations()
+    
+    // 所有车辆路线的向量，按车辆类型排序，大小为numVehicles()
     std::vector<Route> routes;       // size numVehicles(), ordered by type
 
+    // 构造函数：基于问题数据创建解决方案
     Solution(ProblemData const &data);
 
+    // 将给定的解决方案转换为基于节点的内部表示
     // Converts the given solution into our node-based representation.
     void load(pyvrp::Solution const &solution);
 
+    // 将内部表示转换为标准解决方案格式
     // Converts from our representation to a proper solution.
     pyvrp::Solution unload() const;
 
+    // 将给定节点插入到解决方案中 - 要么插入到其邻域位置，要么插入到空路线中（如果改进或需要）。
+    // 如果节点成功插入返回true，否则返回false。更新搜索空间和插入路线的操作留给调用代码。
     // Inserts the given node into the solution - either in its neighbourhood,
     // or in an empty route, if improving or required. Returns true if the node
     // was successfully inserted, false otherwise. Updating the search space and

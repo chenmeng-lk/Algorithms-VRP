@@ -22,10 +22,10 @@ namespace pyvrp::search
  * max_perturbations
  *     Maximum number of perturbations to apply.
  */
-struct PerturbationParams
+struct PerturbationParams  // 扰动参数结构
 {
-    size_t const minPerturbations;
-    size_t const maxPerturbations;
+    size_t const minPerturbations;  // 最小扰动次数
+    size_t const maxPerturbations;  // 最大扰动次数
 
     PerturbationParams(size_t minPerturbations = 1,
                        size_t maxPerturbations = 25);
@@ -45,21 +45,23 @@ struct PerturbationParams
  * params
  *     Perturbation parameters for this manager.
  */
-class PerturbationManager
+class PerturbationManager  // 扰动管理器类：处理搜索期间的扰动
 {
-    PerturbationParams const params_;  // owned by us
-    size_t numPerturbations_;
+    PerturbationParams const params_;  // owned by us 我们拥有的扰动参数
+    size_t numPerturbations_;  // 当前扰动次数
 
 public:
     PerturbationManager(PerturbationParams params = PerturbationParams());
 
     /**
      * Number of perturbations to apply.
+     * 返回扰动次数
      */
     size_t numPerturbations() const;
 
     /**
      * Draws and sets a new random number of perturbations to apply.
+     * 随机抽取并设置新的扰动次数
      */
     void shuffle(RandomNumberGenerator &rng);
 
@@ -77,6 +79,7 @@ public:
      * cost_evaluator
      *     Evaluator to use for insertions.
      */
+    //对给定解执行扰动
     void perturb(Solution &solution,
                  SearchSpace &searchSpace,
                  CostEvaluator const &costEvaluator) const;

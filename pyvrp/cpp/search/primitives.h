@@ -29,7 +29,13 @@ namespace pyvrp::search
  * -------
  * int
  *     Exact delta cost of inserting U after V.
+ * 评估将U插入V之后V的路线中的增量成本。评估是精确的。
+ * U：要插入的节点。必须不在任何路线中。V：之后要插入U的节点。必须当前在路线中。
+ * data：问题数据实例。
+ * cost_evaluator：要使用的成本评估器。
+ * 返回值：将U插入V之后V的路线的精确增量成本。
  */
+//评估将U插入V之后V的路线中的增量成本。
 Cost insertCost(Route::Node *U,
                 Route::Node *V,
                 ProblemData const &data,
@@ -54,7 +60,13 @@ Cost insertCost(Route::Node *U,
  * -------
  * int
  *     Exact delta cost of inserting U in place of V.
+ * 评估将U插入V的位置的增量成本。评估是精确的。
+ * U：要插入的节点。必须不在任何路线中。V：要插入U的位置的节点。必须当前在路线中。
+ * data：问题数据实例。
+ * cost_evaluator：要使用的成本评估器。
+ * 返回值：将U插入V的位置的精确增量成本。
  */
+//评估将U插入V的位置的增量成本
 Cost inplaceCost(Route::Node *U,
                  Route::Node *V,
                  ProblemData const &data,
@@ -76,7 +88,13 @@ Cost inplaceCost(Route::Node *U,
  * -------
  * int
  *     Exact delta cost of removing U.
+ * 评估从其当前路线中移除U的增量成本。评估是精确的。
+ * U：要移除的节点（客户或重载配送中心）。必须当前在路线中。
+ * data：问题数据实例。
+ * cost_evaluator：要使用的成本评估器。
+ * 返回值：移除U的精确增量成本。
  */
+//评估从其当前路线中移除U的增量成本
 Cost removeCost(Route::Node *U,
                 ProblemData const &data,
                 CostEvaluator const &costEvaluator);

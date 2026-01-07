@@ -158,20 +158,20 @@ public:
      * name
      *     Free-form name field for this client.
      */
-    struct Client
+    struct Client  // 客户数据结构，存储客户的所有属性
     {
-        Coordinate const x;
-        Coordinate const y;
-        Duration const serviceDuration;
-        Duration const twEarly;  // Earliest possible start of service
-        Duration const twLate;   // Latest possible start of service
-        std::vector<Load> const delivery;
-        std::vector<Load> const pickup;
-        Duration const releaseTime;  // Earliest possible time to leave depot
-        Cost const prize;            // Prize for visiting this client
-        bool const required;         // Must client be in solution?
-        std::optional<size_t> const group;  // Optional client group membership
-        char const *name;                   // Client name (for reference)
+        Coordinate const x; //  客户的横坐标
+        Coordinate const y; //  客户的纵坐标
+        Duration const serviceDuration; //  车辆在该客户处需要花费的服务时间
+        Duration const twEarly; // Earliest possible start of service 可以开始服务的最早时间
+        Duration const twLate; // Latest possible start of service 可以开始服务的最晚时间
+        std::vector<Load> const delivery; // 客户从仓库接收的配送量（每个维度一个值）
+        std::vector<Load> const pickup; // 客户返回给仓库的拾取量（每个维度一个值）
+        Duration const releaseTime; // Earliest possible time to leave depot 车辆可以离开仓库前往该客户的最早时间
+        Cost const prize; // Prize for visiting this client 访问该客户所获得的奖励
+        bool const required; // Must client be in solution? 该客户是否必须在可行解中被访问
+        std::optional<size_t> const group; // Optional client group membership 该客户所属的可选客户组索引
+        char const *name; // Client name (for reference) 客户的名称（用于参考）
 
         Client(Coordinate x,
                Coordinate y,
@@ -236,18 +236,18 @@ public:
      *
      * Raises
      * ------
-     * ValueError
-     *     When the given clients contain duplicates, or when a client is added
-     *     to the group twice.
+ *     ValueError
+ *     When the given clients contain duplicates, or when a client is added
+ *     to the group twice.
      */
-    class ClientGroup
+    class ClientGroup  // 客户组类，用于对客户进行分组并施加额外限制
     {
-        std::vector<size_t> clients_;  // clients in this group
+        std::vector<size_t> clients_;  // clients in this group 该组中的客户索引列表
 
     public:
-        bool const required;                  // is visiting the group required?
-        bool const mutuallyExclusive = true;  // at most one visit in group?
-        char const *name;                     // Group name (for reference)
+        bool const required;                  // is visiting the group required? 是否必须访问该组
+        bool const mutuallyExclusive = true;  // at most one visit in group? 组内是否互斥（最多访问一个客户）
+        char const *name;                     // Group name (for reference) 组名称（用于参考）
 
         explicit ClientGroup(std::vector<size_t> clients = {},
                              bool required = true,
@@ -317,13 +317,13 @@ public:
      * name
      *     Free-form name field for this depot.
      */
-    struct Depot
+    struct Depot  // 仓库数据结构，存储仓库的所有属性
     {
-        Coordinate const x;
-        Coordinate const y;
-        Duration const twEarly;  // Depot opening time
-        Duration const twLate;   // Depot closing time
-        char const *name;        // Depot name (for reference)
+        Coordinate const x;  // 仓库的横坐标
+        Coordinate const y;  // 仓库的纵坐标
+        Duration const twEarly;  // Depot opening time 仓库开放时间（最早时间）
+        Duration const twLate;   // Depot closing time 仓库关闭时间（最晚时间）
+        char const *name;        // Depot name (for reference) 仓库名称（用于参考）
 
         Depot(Coordinate x,
               Coordinate y,
@@ -479,28 +479,28 @@ public:
      * name
      *     Free-form name field for this vehicle type.
      */
-    struct VehicleType
+    struct VehicleType  // 车辆类型数据结构，存储车辆类型的所有属性
     {
-        size_t const numAvailable;         // Available vehicles of this type
-        size_t const startDepot;           // Departure depot location
-        size_t const endDepot;             // Return depot location
-        std::vector<Load> const capacity;  // This type's vehicle capacity
-        Duration const twEarly;            // Start of shift
-        Duration const twLate;             // End of shift
-        Duration const shiftDuration;      // Nominal shift duration
-        Distance const maxDistance;        // Maximum route distance
-        Cost const fixedCost;         // Fixed cost of using this vehicle type
-        Cost const unitDistanceCost;  // Variable cost per unit of distance
-        Cost const unitDurationCost;  // Variable cost per unit of duration
-        size_t const profile;         // Distance and duration profile
-        Duration const startLate;     // Latest start of shift
-        std::vector<Load> const initialLoad;     // Initially used capacity
-        std::vector<size_t> const reloadDepots;  // Reload locations
-        size_t const maxReloads;                 // Maximum number of reloads
-        Duration const maxOvertime;              // Maximum allowed overtime
-        Cost const unitOvertimeCost;             // Cost per unit of overtime
-        Duration const maxDuration;  // Maximum route duration, incl. overtime
-        char const *name;            // Type name (for reference)
+        size_t const numAvailable;         // Available vehicles of this type 该类型可用车辆数量
+        size_t const startDepot;           // Departure depot location 出发仓库位置索引
+        size_t const endDepot;             // Return depot location 返回仓库位置索引
+        std::vector<Load> const capacity;  // This type's vehicle capacity 该类型车辆的容量（每个负载维度）
+        Duration const twEarly;            // Start of shift 班次开始时间
+        Duration const twLate;             // End of shift 班次结束时间
+        Duration const shiftDuration;      // Nominal shift duration 名义最大班次持续时间
+        Distance const maxDistance;        // Maximum route distance 最大路径距离
+        Cost const fixedCost;         // Fixed cost of using this vehicle type 使用该类型车辆的固定成本
+        Cost const unitDistanceCost;  // Variable cost per unit of distance 每单位距离的可变成本
+        Cost const unitDurationCost;  // Variable cost per unit of duration 每单位持续时间的可变成本
+        size_t const profile;         // Distance and duration profile 距离和持续时间配置索引
+        Duration const startLate;     // Latest start of shift 班次最晚开始时间
+        std::vector<Load> const initialLoad;     // Initially used capacity 初始已使用的容量
+        std::vector<size_t> const reloadDepots;  // Reload locations 重新装载仓库位置索引列表
+        size_t const maxReloads;                 // Maximum number of reloads 最大重新装载次数
+        Duration const maxOvertime;              // Maximum allowed overtime 允许的最大加班时间
+        Cost const unitOvertimeCost;             // Cost per unit of overtime 每单位加班时间的成本
+        Duration const maxDuration;  // Maximum route duration, incl. overtime 最大路径持续时间（包括加班时间）
+        char const *name;            // Type name (for reference) 类型名称（用于参考）
 
         VehicleType(size_t numAvailable = 1,
                     std::vector<Load> capacity = {},
@@ -567,26 +567,26 @@ private:
     /**
      * Simple union type that distinguishes between client and depot locations.
      */
-    union Location
+    union Location  // 位置联合体，用于区分客户和仓库位置
     {
-        Client const *client;
-        Depot const *depot;
+        Client const *client;  // 客户指针
+        Depot const *depot;    // 仓库指针
 
         inline operator Client const &() const;
         inline operator Depot const &() const;
     };
 
-    std::pair<Coordinate, Coordinate> centroid_;   // Center of client locations
-    std::vector<Matrix<Distance>> const dists_;    // Distance matrices
-    std::vector<Matrix<Duration>> const durs_;     // Duration matrices
-    std::vector<Client> const clients_;            // Client information
-    std::vector<Depot> const depots_;              // Depot information
-    std::vector<VehicleType> const vehicleTypes_;  // Vehicle type information
-    std::vector<ClientGroup> const groups_;        // Client groups
+    std::pair<Coordinate, Coordinate> centroid_;   // Center of client locations 客户位置的中心点
+    std::vector<Matrix<Distance>> const dists_;    // Distance matrices 距离矩阵列表（每个配置一个）
+    std::vector<Matrix<Duration>> const durs_;     // Duration matrices 持续时间矩阵列表（每个配置一个）
+    std::vector<Client> const clients_;            // Client information 客户信息列表
+    std::vector<Depot> const depots_;              // Depot information 仓库信息列表
+    std::vector<VehicleType> const vehicleTypes_;  // Vehicle type information 车辆类型信息列表
+    std::vector<ClientGroup> const groups_;        // Client groups 客户组列表
 
-    size_t const numVehicles_;
-    size_t const numLoadDimensions_;
-    bool const hasTimeWindows_;
+    size_t const numVehicles_;         // 车辆总数
+    size_t const numLoadDimensions_;   // 负载维度数量
+    bool const hasTimeWindows_;        // 是否存在时间窗约束
 
 public:
     bool operator==(ProblemData const &other) const = default;
@@ -615,6 +615,7 @@ public:
 
     /**
      * Returns a list of all client groups in the problem instance.
+     * 返回所有客户组的列表
      */
     [[nodiscard]] std::vector<ClientGroup> const &groups() const;
 
@@ -710,47 +711,56 @@ public:
      * Determines whether any of the :meth:`~clients` or :meth:`~depots` in this
      * instance have nonstandard time windows, or if any :meth:`~vehicle_types`
      * have nonstandard shift time windows or latest start constraints.
+     * 是否存在时间窗约束
      */
     [[nodiscard]] inline bool hasTimeWindows() const;
 
     /**
      * Number of clients in this problem instance.
+     * 客户数量
      */
     [[nodiscard]] size_t numClients() const;
 
     /**
      * Number of depots in this problem instance.
+     * 返回仓库数量
      */
     [[nodiscard]] size_t numDepots() const;
 
     /**
      * Number of client groups in this problem instance.
+     * 返回客户组数量
      */
     [[nodiscard]] size_t numGroups() const;
 
     /**
      * Number of locations in this problem instance, that is, the number of
      * depots plus the number of clients in the instance.
+     * 返回位置总数（仓库数 + 客户数）
      */
     [[nodiscard]] size_t numLocations() const;
 
     /**
      * Number of vehicle types in this problem instance.
+     * 返回车辆类型数量
      */
     [[nodiscard]] size_t numVehicleTypes() const;
 
     /**
      * Number of vehicles in this problem instance.
+     * 返回车辆总数
      */
     [[nodiscard]] size_t numVehicles() const;
 
     /**
      * Number of routing profiles in this problem instance.
+     * 返回路径规划配置数量
      */
     [[nodiscard]] size_t numProfiles() const;
 
     /**
      * Number of load dimensions in this problem instance.
+     * 返回负载维度数量
      */
     [[nodiscard]] size_t numLoadDimensions() const;
 
@@ -795,10 +805,11 @@ public:
     ProblemData() = delete;
 };
 
-ProblemData::Location::operator Client const &() const { return *client; }
+ProblemData::Location::operator Client const &() const { return *client; }  // 位置联合体转换为客户引用
 
-ProblemData::Location::operator Depot const &() const { return *depot; }
+ProblemData::Location::operator Depot const &() const { return *depot; }  // 位置联合体转换为仓库引用
 
+// 根据索引返回位置信息，索引小于仓库数量则为仓库，否则为客户
 ProblemData::Location ProblemData::location(size_t idx) const
 {
     assert(idx < numLocations());
@@ -811,15 +822,15 @@ Matrix<Distance> const &ProblemData::distanceMatrix(size_t profile) const
 {
     assert(profile < dists_.size());
     return dists_[profile];
-}
+}  // 返回指定路径规划配置的距离矩阵
 
 Matrix<Duration> const &ProblemData::durationMatrix(size_t profile) const
 {
     assert(profile < durs_.size());
     return durs_[profile];
-}
+}  // 返回指定路径规划配置的持续时间矩阵
 
-bool ProblemData::hasTimeWindows() const { return hasTimeWindows_; }
+bool ProblemData::hasTimeWindows() const { return hasTimeWindows_; }  // 返回是否存在时间窗约束
 }  // namespace pyvrp
 
 #endif  // PYVRP_PROBLEMDATA_H
