@@ -1,0 +1,19 @@
+sudo apt-get install -y ca-ce
+sudo mkdir -p /etc/apt/keyrings
+sudo apt install python3-pip
+sudo pip install --upgrade uv
+设置虚拟环境
+uv sync
+
+执行测试套件：
+uv run pytest
+
+编译 C++ 扩展
+uv run buildtools/build_extensions.py
+
+调试扩展(可选)
+uv run buildtools/build_extensions.py --build_type debug
+
+测试实例（round_func dimacs参数把结果成本乘以10输出）
+uv run pyvrp instances/CVRP/XXL/X-n270-k35.vrp --seed 6 --round_func dimacs --max_runtime 5
+uv run perf record pyvrp instances/CVRP/XXL/X-n270-k35.vrp --seed 6 --round_func dimacs --max_runtime 5

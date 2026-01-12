@@ -306,13 +306,16 @@ PYBIND11_MODULE(_search, m)
 
     py::class_<PerturbationParams>(
         m, "PerturbationParams", DOC(pyvrp, search, PerturbationParams))
-        .def(py::init<size_t, size_t>(),
+        .def(py::init<size_t, size_t, double>(),
              py::arg("min_perturbations") = 1,
-             py::arg("max_perturbations") = 25)
+             py::arg("max_perturbations") = 25,
+             py::arg("cost_based_ratio") = 0.5)
         .def_readonly("min_perturbations",
                       &PerturbationParams::minPerturbations)
         .def_readonly("max_perturbations",
                       &PerturbationParams::maxPerturbations)
+        .def_readonly("cost_based_ratio",
+                      &PerturbationParams::costBasedRatio)
         .def(py::self == py::self, py::arg("other"));  // this is __eq__
 
     py::class_<PerturbationManager>(
@@ -322,6 +325,9 @@ PYBIND11_MODULE(_search, m)
         .def("num_perturbations",
              &PerturbationManager::numPerturbations,
              DOC(pyvrp, search, PerturbationManager, numPerturbations))
+        .def("cost_based_ratio",
+             &PerturbationManager::costBasedRatio,
+             DOC(pyvrp, search, PerturbationManager, costBasedRatio))
         .def("shuffle",
              &PerturbationManager::shuffle,
              py::arg("rng"),
@@ -331,6 +337,8 @@ PYBIND11_MODULE(_search, m)
              py::arg("solution"),
              py::arg("search_space"),
              py::arg("cost_evaluator"),
+             py::arg("data"),
+             py::arg("rng"),
              py::call_guard<py::gil_scoped_release>(),
              DOC(pyvrp, search, PerturbationManager, perturb));
 

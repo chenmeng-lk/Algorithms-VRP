@@ -18,7 +18,10 @@ pyvrp::Solution LocalSearch::operator()(pyvrp::Solution const &solution,
                                         CostEvaluator const &costEvaluator)
 {
     loadSolution(solution);
-    perturbationManager_.perturb(solution_, searchSpace_, costEvaluator);
+
+    // Perturb the solution using the stored RNG (set via shuffle)
+    if (rng_)
+        perturbationManager_.perturb(solution_, searchSpace_, costEvaluator, data, *rng_);
 
     while (true)
     {
@@ -156,6 +159,7 @@ void LocalSearch::intensify(CostEvaluator const &costEvaluator)
 
 void LocalSearch::shuffle(RandomNumberGenerator &rng)
 {
+    rng_ = &rng;  // Store RNG for use in perturb
     perturbationManager_.shuffle(rng);
     searchSpace_.shuffle(rng);
 

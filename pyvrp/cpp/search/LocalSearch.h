@@ -31,6 +31,9 @@ class LocalSearch
     // each LS invocation.
     PerturbationManager &perturbationManager_;
 
+    // Random number generator for perturbation method selection
+    RandomNumberGenerator *rng_ = nullptr;
+
     std::vector<NodeOperator *> nodeOps;
     std::vector<RouteOperator *> routeOps;
 

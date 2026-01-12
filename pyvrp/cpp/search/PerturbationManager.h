@@ -11,7 +11,7 @@
 namespace pyvrp::search
 {
 /**
- * PerturbationParams(min_perturbations: int = 1, max_perturbations: int = 25)
+ * PerturbationParams(min_perturbations: int = 1, max_perturbations: int = 25, cost_based_ratio: float = 0.5)
  *
  * Perturbation parameters.
  *
@@ -21,14 +21,19 @@ namespace pyvrp::search
  *     Minimum number of perturbations to apply. Must not be negative.
  * max_perturbations
  *     Maximum number of perturbations to apply.
+ * cost_based_ratio
+ *     Probability of using cost-based perturbation (0.0 to 1.0).
+ *     Default is 0.5 (50% cost-based, 50% random).
  */
 struct PerturbationParams
 {
     size_t const minPerturbations;
     size_t const maxPerturbations;
+    double const costBasedRatio;
 
     PerturbationParams(size_t minPerturbations = 1,
-                       size_t maxPerturbations = 25);
+                       size_t maxPerturbations = 25,
+                       double costBasedRatio = 0.5);
 
     bool operator==(PerturbationParams const &other) const = default;
 };
@@ -59,6 +64,11 @@ public:
     size_t numPerturbations() const;
 
     /**
+     * Cost-based perturbation ratio.
+     */
+    double costBasedRatio() const;
+
+    /**
      * Draws and sets a new random number of perturbations to apply.
      */
     void shuffle(RandomNumberGenerator &rng);
@@ -76,10 +86,16 @@ public:
      *     The search space to use for perturbation.
      * cost_evaluator
      *     Evaluator to use for insertions.
+     * data
+     *     Problem data instance.
+     * rng
+     *     Random number generator to use for selecting perturbation method.
      */
     void perturb(Solution &solution,
                  SearchSpace &searchSpace,
-                 CostEvaluator const &costEvaluator) const;
+                 CostEvaluator const &costEvaluator,
+                 ProblemData const &data,
+                 RandomNumberGenerator &rng) const;
 };
 }  // namespace pyvrp::search
 
